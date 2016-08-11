@@ -5,7 +5,7 @@
 # Author: Edoardo Sarti
 # Date: Aug 10 2016
 
-import sys, re
+import sys, re, urllib.request, gzip, shutil, os
 
 # Support functions
 def write_log(name, text):
@@ -29,34 +29,13 @@ def parse_attributes(line):
 	else:
 		return None
 
+
 def extract_tag(line):
 	return re.findall(r'<(.*?)/*>',line,re.DOTALL)[0].split()[0]
 
+
 def extract_text(line):
 	return re.findall(r'>(.*?)</',line,re.DOTALL)[0]
-
-def download_structures(database):
-	
-	
-
-# Library function
-def generate_raw_pdb_library(names, pdbtm_file_path):
-	# Hardcoded variables
-	this_name = 'genrlib'
-	indent = " "*len(header(this_name))
-	version = 3.1
-
-	# Checks
-	for path_name in [names['installpath']+x for x in names if x != 'installpath']:
-		if not os.path.exists(path_name):
-			logmsg = header(this_name) + "ERROR: The directory path {0} does not exist. Please generate the file system first.".format(path_name)
-			write_log(this_name, logmsg)	
-			raise NameError(logmsg)
-	# Parser
-	database = parser(pdbtm_file_path)
-
-	# Downloader
-	
 
 
 def parser(pdbtm_file_path):
@@ -86,7 +65,7 @@ def parser(pdbtm_file_path):
 		if re.search('^\s*<', line):
 			# If line is a comment, skip
 			if re.search('^\s*<\?', line):
-				print("comment:\t"+line)
+#				print("comment:\t"+line)
 				continue
 			# If line is not a closing tag
 			elif not re.search('^\s*</', line):
@@ -94,7 +73,7 @@ def parser(pdbtm_file_path):
 				# and, in the body dictionary of the last element of the DB list, add the 
 				# text as the value corresponding to the key tag.
 				if re.search('</', line):
-					print("O+C:\t"+line)
+#					print("O+C:\t"+line)
 					tag = extract_tag(line)
 					text = extract_text(line)
 					DB[-1][1][tag] = text
@@ -106,7 +85,7 @@ def parser(pdbtm_file_path):
 					# shaped as a dictionary (it will be changed in case the body is text).
 					# In the DB_tagnames list, take note of the name of the unclosed tag.
 					if not re.search('/>', line):
-						print("O:\t"+line)
+#						print("O:\t"+line)
 						parameters = parse_attributes(line)
 						element = [parameters, {}]
 						tag = extract_tag(line)
@@ -116,7 +95,7 @@ def parser(pdbtm_file_path):
 					# containing the parameters inside the standalone tag, and extract
 					# the name of the tag.
 					else:
-						print("O/C:\t"+line)
+#						print("O/C:\t"+line)
 						parameters = parse_attributes(line)
 						tag = extract_tag(line)
 						# If the tag accepts multiple instances
@@ -137,7 +116,7 @@ def parser(pdbtm_file_path):
 							DB[-1][1][tag] = parameters
 			# If line is a closing tag
 			else:
-				print("C:\t"+line)
+#				print("C:\t"+line)
 				# If the last tag name in the DB_tagnames list is a tag accepting multiple instances
 				if DB_tagnames[-1] in open_list_tags:
 					# If the tag is not present yet in the body dictionary of the second-last element
@@ -158,7 +137,7 @@ def parser(pdbtm_file_path):
 				del DB_tagnames[-1], DB[-1]
 		# If line is text
 		else:
-			print("T:\t"+line)
+#			print("T:\t"+line)
 			# If there is no accumulated text yet and the body of the last element of the DB list is still an empty
 			# dictionary, change it to text and add the first line.
 			if type(DB[-1][1]) == dict:
@@ -176,6 +155,9 @@ def parser(pdbtm_file_path):
 		if stophere == N:
 			break
 		'''
+		if '</PDBTM>' in line:
+			print("READING COMPLETE!")
+
 	
 	# Reorganize the database in a dictionary structure
 	# The DB structure is a list with only one element (this is the result of recursion), whose body contains a dictionary with only
@@ -185,10 +167,54 @@ def parser(pdbtm_file_path):
 	DB2 = {}
 	for ns in range(len(DB[0][1]['pdbtm'])):
 		pdbname = DB[0][1]['pdbtm'][ns][0]['ID'].upper()
+#		print(pdbname)
 		tmp_struct = DB[0][1]['pdbtm'][ns]
 		DB2[pdbname] = tmp_struct
+#	print(ns, DB[0][1]['pdbtm'][ns])
 
+	exit(1)
+
+#	print("Number of entries: {0} {1}".format(len(DB[0][1]['pdbtm']), len(list(DB2.keys()))))
 	return DB2
 
+
+def download_structures(database, raw_pdb_dir):
+	for pdbname in list(database.keys()):
+		url = 'http://www.rcsb.org/pdb/files/'+pdbname+'.pdb.gz'
+		local_filename = raw_pdb_dir + pdbname + '.pdb'
+		with urllib.request.urlopen(url) as response:
+			with gzip.GzipFile(fileobj=response) as uncompressed, open(local_filename, 'wb') as local_file:
+				shutil.copyfileobj(uncompressed, local_file)
+
+	downloaded_files = [x[:-4] for x in os.listdir(raw_pdb_dir) if x[-4:]=='.pdb']
+	missing_files_filename = raw_pdb_dir + 'missing_files.txt'
+	missing_files_file = open(missing_files_filename, 'w')
+	for database_struct in list(database.keys()):
+		if database_struct not in downloaded_files:
+			missing_files_file.write(database_struct+"\n")
+	missing_files_file.close()
+
+
+# Library function
+def generate_raw_pdb_library(locations, pdbtm_file_path):
+	# Hardcoded variables
+	this_name = 'genrlib'
+	indent = " "*len(header(this_name))
+	version = 3.1
+
+	# Checks
+	for path_name in [locations['installpath']+x for x in locations if x != 'installpath']:
+		if not os.path.exists(path_name):
+			logmsg = header(this_name) + "ERROR: The directory path {0} does not exist. Please generate the file system first.".format(path_name)
+			write_log(this_name, logmsg)	
+			raise NameError(logmsg)
+	# Parser
+	database = parser(pdbtm_file_path)
+
+	# Downloader
+	download_structures(database, locations['raw_pdbs'])
+
+
 DB = parser(sys.argv[1])
-print(DB)
+download_structures(DB, sys.argv[2])
+#print(DB)
