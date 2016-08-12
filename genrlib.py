@@ -5,7 +5,7 @@
 # Author: Edoardo Sarti
 # Date: Aug 10 2016
 
-import sys, re, urllib.request, gzip, shutil, os
+import sys, re, urllib.request, gzip, shutil, os, collections
 
 # Support functions
 def write_log(name, text):
@@ -31,11 +31,25 @@ def parse_attributes(line):
 
 
 def extract_tag(line):
-	return re.findall(r'<(.*?)/*>',line,re.DOTALL)[0].split()[0]
+	# Extracts the first word in the first tag (opening or closing) found in the line
+	tag = re.findall(r'<(.*?)/*>',line,re.DOTALL)
+	if not tag:
+		raise NameError("ERROR: no tag name found in line {0}".format(line))
+	return tag[0].split()[0]
 
 
 def extract_text(line):
-	return re.findall(r'>(.*?)</',line,re.DOTALL)[0]
+	# Text between opening and closing tags
+	text = re.findall(r'>(.*\S.*)</',line,re.DOTALL)
+	if not text:
+		# Text after an opening tag
+		text = re.findall(r'>(.*\S.*)$',line,re.DOTALL)
+	if not text:
+		# Text before a closing tag
+		text = re.findall(r'^(.*\S.*)</',line,re.DOTALL)
+	if not text:
+		raise NameError("ERROR: no text found in line {0}".format(line))
+	return text[0]
 
 
 def parser(pdbtm_file_path):
@@ -53,7 +67,7 @@ def parser(pdbtm_file_path):
 	text = pdbtm_file.read().split('\n')
 	pdbtm_file.close()
 
-	DB = []
+	DB = [[None, {}]]
 	DB_tagnames = []
 	open_list_tags = ['pdbtm', 'MODIFICATION', 'MATRIX', 'CHAIN', 'REGION']
 	stophere = 0
@@ -61,81 +75,109 @@ def parser(pdbtm_file_path):
 	for line in text:
 		if not line:
 			continue
+#		if '<pdbtm' in line and DB and 'pdbtm' in DB[1][1]:
+#			print(DB[1][1]['pdbtm'][-1], DB_tagnames)
 		# If line contains a tag
-		if re.search('^\s*<', line):
+		if re.search('<.*>', line):
 			# If line is a comment, skip
 			if re.search('^\s*<\?', line):
 #				print("comment:\t"+line)
 				continue
-			# If line is not a closing tag
-			elif not re.search('^\s*</', line):
-				# If line contains opening and closing tag, extract the tag and the text,
+			# If line contains a tag but does not contain a closing tag (i.e. only contains one or more opening tags)
+			elif not re.search('</.*>', line):
+				# If line is a standalone tag, compile a "body termination" dictionary
+				# containing the parameters inside the standalone tag, and extract
+				# the name of the tag.
+				if re.search('^\s*<.*/>\s*$', line):
+#					print("O/C:\t"+line)
+					parameters = parse_attributes(line)
+					tag = extract_tag(line)
+					# If the tag accepts multiple instances
+					if tag in open_list_tags:
+						# If the tag is not present yet in the body dictionary
+						# of the last element of the DB list, place a new element
+						# whose key is the tag name and whose value is an empty list.
+						if tag not in DB[-1][1]:
+							DB[-1][1][tag] = []
+						# In the body dictionary of the last element of the DB list,
+						# append to the list corresponding to the tag name the "body
+						# termination" dictionary
+						DB[-1][1][tag].append(parameters)
+					# If the tag does not accept multiple instances, just add an element to
+					# the body dictionary of the last element of the DB list. The key of this
+					# element is the tag name and the value is the "body termination" dictionary
+					else:
+						DB[-1][1][tag] = parameters
+				# If line is an unmatched opening tag, compile a header dictionary 
+				# containing the parameters inside the opening tag, and append to the
+				# DB list a new element composed of the header and the empty body,
+				# shaped as a dictionary (it will be changed in case the body is text).
+				# In the DB_tagnames list, take note of the name of the unclosed tag.
+				elif re.search('^\s*<.*>\s*$', line):
+#					print("O:\t"+line)
+					parameters = parse_attributes(line)
+					element = [parameters, {}]
+					tag = extract_tag(line)
+					DB.append(element)
+					DB_tagnames.append(tag)
+				# If line contains an opening tag at the beginning
+				elif re.search('^\s*<.*>.*$', line):
+#					print("OT:\t"+line)
+					tag = extract_tag(line)
+					text = extract_text(line).strip() + " "
+					element = [None, text]
+					DB.append(element)
+					DB_tagnames.append(tag)
+				else:
+					raise NameError("ERROR: line {0} is not compliant with the XML format".format(line))
+			# If line contains a tag and contains a closing tag
+			else:
+				# If line contains opening and closing tags, extract the tag and the text,
 				# and, in the body dictionary of the last element of the DB list, add the 
 				# text as the value corresponding to the key tag.
-				if re.search('</', line):
+				if re.search('^\s*<.*>.+</.*>\s*$', line):
 #					print("O+C:\t"+line)
 					tag = extract_tag(line)
 					text = extract_text(line)
 					DB[-1][1][tag] = text
-				# If line does not contain closing tag
+				# If line does not contain opening and closing tags
 				else:
-					# If line is an unmatched opening tag, compile a header dictionary 
-					# containing the parameters inside the opening tag, and append to the
-					# DB list a new element composed of the header and the empty body,
-					# shaped as a dictionary (it will be changed in case the body is text).
-					# In the DB_tagnames list, take note of the name of the unclosed tag.
-					if not re.search('/>', line):
-#						print("O:\t"+line)
-						parameters = parse_attributes(line)
-						element = [parameters, {}]
-						tag = extract_tag(line)
-						DB.append(element)
-						DB_tagnames.append(tag)
-					# If line is a standalone tag, compile a "body termination" dictionary
-					# containing the parameters inside the standalone tag, and extract
-					# the name of the tag.
-					else:
-#						print("O/C:\t"+line)
-						parameters = parse_attributes(line)
-						tag = extract_tag(line)
-						# If the tag accepts multiple instances
-						if tag in open_list_tags:
-							# If the tag is not present yet in the body dictionary
-							# of the last element of the DB list, place a new element
-							# whose key is the tag name and whose value is an empty list.
-							if tag not in DB[-1][1]:
-								DB[-1][1][tag] = []
-							# In the body dictionary of the last element of the DB list,
-							# append to the list corresponding to the tag name the "body
-							# termination" dictionary
-							DB[-1][1][tag].append(parameters)
-						# If the tag does not accept multiple instances, just add an element to
-						# the body dictionary of the last element of the DB list. The key of this
-						# element is the tag name and the value is the "body termination" dictionary
+					# If line is a closing tag
+					if re.search('^\s*</.*>\s*$', line):
+#						print("C:\t"+line)
+						pass
+					# If line contains a closing tag at the end
+					elif re.search('^.+</.*>\s*$', line):
+#						print("TC:\t"+line)
+						# If there is no accumulated text yet and the body of the last element of the DB list is still an empty
+						# dictionary, change it to text and add the first line.
+						if type(DB[-1][1]) == dict:
+							DB[-1][1] = extract_text(line).strip() + " "
+						# If there already is accumulated text, just extend the string
 						else:
-							DB[-1][1][tag] = parameters
-			# If line is a closing tag
-			else:
-#				print("C:\t"+line)
-				# If the last tag name in the DB_tagnames list is a tag accepting multiple instances
-				if DB_tagnames[-1] in open_list_tags:
-					# If the tag is not present yet in the body dictionary of the second-last element
-					# of the DB list, place a new element whose key is the tag name and whose value is 
-					#an empty list
-					if DB_tagnames[-1] not in DB[-2][1]:
-						DB[-2][1][DB_tagnames[-1]] = []
-					# In the body dictionary of the second-last element of the DB list, append to the
-					# list corresponding to the tag name the whole last element of the DB list
-					DB[-2][1][DB_tagnames[-1]].append(DB[-1])
-				# If the last tag name in the DB_tagnames list is not a tag accepting multiple instances,
-				# just add an element to the body dictionary of the second-last element of the DB list.
-				# The key of this element is the tag name and the value is the whole last element of the DB list.
-				else:
-					DB[-2][1][DB_tagnames[-1]] = DB[-1]
-				# Delete the last element of the DB and DB_tagnames lists, since now is incorporated as an element
-				# of the body dictionary of the second-last element of the DB list.
-				del DB_tagnames[-1], DB[-1]
-		# If line is text
+							DB[-1][1] += extract_text(line).strip() + " "
+					else:
+						raise NameError("ERROR: line {0} is not compliant with the XML format".format(line))
+					# If the last tag name in the DB_tagnames list is a tag accepting multiple instances
+					if DB_tagnames[-1] in open_list_tags:
+						# If the tag is not present yet in the body dictionary of the second-last element
+						# of the DB list, place a new element whose key is the tag name and whose value is 
+						# an empty list
+						if DB_tagnames[-1] not in DB[-2][1]:
+							DB[-2][1][DB_tagnames[-1]] = []
+						# In the body dictionary of the second-last element of the DB list, append to the
+						# list corresponding to the tag name the whole last element of the DB list
+						DB[-2][1][DB_tagnames[-1]].append(DB[-1])
+					# If the last tag name in the DB_tagnames list is not a tag accepting multiple instances,
+					# just add an element to the body dictionary of the second-last element of the DB list.
+					# The key of this element is the tag name and the value is the whole last element of the DB list.
+					else:
+						DB[-2][1][DB_tagnames[-1]] = DB[-1]
+					# Delete the last element of the DB and DB_tagnames lists, since now is incorporated as an element
+					# of the body dictionary of the second-last element of the DB list.
+					del DB_tagnames[-1], DB[-1]
+
+		# If line does not contain tags
 		else:
 #			print("T:\t"+line)
 			# If there is no accumulated text yet and the body of the last element of the DB list is still an empty
@@ -151,12 +193,13 @@ def parser(pdbtm_file_path):
 		'''
 		N = 2
 		if '</pdbtm>' in line:
+			print(DB)
 			stophere += 1
 		if stophere == N:
 			break
 		'''
-		if '</PDBTM>' in line:
-			print("READING COMPLETE!")
+#		if '</PDBTM>' in line:
+#			print("READING COMPLETE!")
 
 	
 	# Reorganize the database in a dictionary structure
@@ -165,26 +208,28 @@ def parser(pdbtm_file_path):
 	# dictionary having as keys the uppercase 4-letter PDB names, and for values the corresponding entry compiled in the DB[0][1]['pdbtm']
 	# sublist.
 	DB2 = {}
-	for ns in range(len(DB[0][1]['pdbtm'])):
-		pdbname = DB[0][1]['pdbtm'][ns][0]['ID'].upper()
+	for ns in range(len(DB[0][1]['PDBTM'][1]['pdbtm'])):
+		pdbname = DB[0][1]['PDBTM'][1]['pdbtm'][ns][0]['ID'].upper()
 #		print(pdbname)
-		tmp_struct = DB[0][1]['pdbtm'][ns]
+		tmp_struct = DB[0][1]['PDBTM'][1]['pdbtm'][ns]
 		DB2[pdbname] = tmp_struct
-#	print(ns, DB[0][1]['pdbtm'][ns])
+#	print(ns, DB[0][1]['PDBTM'][1]['pdbtm'][ns])
 
-	exit(1)
-
-#	print("Number of entries: {0} {1}".format(len(DB[0][1]['pdbtm']), len(list(DB2.keys()))))
+#	print("Number of entries: {0} {1}".format(len(DB[0][1]['PDBTM'][1]['pdbtm']), len(list(DB2.keys()))))
+	for x in list(DB2.keys()):
+#		print(x[0])
+		print(x.lower())
+#	print(DB2)
 	return DB2
 
 
 def download_structures(database, raw_pdb_dir):
-	for pdbname in list(database.keys()):
-		url = 'http://www.rcsb.org/pdb/files/'+pdbname+'.pdb.gz'
-		local_filename = raw_pdb_dir + pdbname + '.pdb'
-		with urllib.request.urlopen(url) as response:
-			with gzip.GzipFile(fileobj=response) as uncompressed, open(local_filename, 'wb') as local_file:
-				shutil.copyfileobj(uncompressed, local_file)
+#	for pdbname in list(database.keys()):
+#		url = 'http://www.rcsb.org/pdb/files/'+pdbname+'.pdb.gz'
+#		local_filename = raw_pdb_dir + pdbname + '.pdb'
+#		with urllib.request.urlopen(url) as response:
+#			with gzip.GzipFile(fileobj=response) as uncompressed, open(local_filename, 'wb') as local_file:
+#				shutil.copyfileobj(uncompressed, local_file)
 
 	downloaded_files = [x[:-4] for x in os.listdir(raw_pdb_dir) if x[-4:]=='.pdb']
 	missing_files_filename = raw_pdb_dir + 'missing_files.txt'
@@ -193,6 +238,8 @@ def download_structures(database, raw_pdb_dir):
 		if database_struct not in downloaded_files:
 			missing_files_file.write(database_struct+"\n")
 	missing_files_file.close()
+
+	print(len(downloaded_files), len(database.keys()))
 
 
 # Library function
@@ -213,6 +260,8 @@ def generate_raw_pdb_library(locations, pdbtm_file_path):
 
 	# Downloader
 	download_structures(database, locations['raw_pdbs'])
+
+	# Dow	
 
 
 DB = parser(sys.argv[1])
