@@ -5,7 +5,7 @@
 # Author: Edoardo Sarti
 # Date: Aug 10 2016
 
-import sys, re, urllib.request, gzip, shutil, os, collections
+import sys, re, urllib.request, gzip, shutil, os, collections, copy
 
 # Support functions
 def write_log(name, text):
@@ -30,15 +30,17 @@ def parse_attributes(line):
 		return None
 
 
-def extract_tag(line):
+def extract_tag(line, this_name):
 	# Extracts the first word in the first tag (opening or closing) found in the line
 	tag = re.findall(r'<(.*?)/*>',line,re.DOTALL)
 	if not tag:
-		raise NameError("ERROR: no tag name found in line {0}".format(line))
+		logmsg = header(this_name) + "ERROR: no tag name found in line {0}".format(line)
+		write_log(this_name, logmsg)	
+		raise NameError(logmsg)
 	return tag[0].split()[0]
 
 
-def extract_text(line):
+def extract_text(line, this_name):
 	# Text between opening and closing tags
 	text = re.findall(r'>(.*\S.*)</',line,re.DOTALL)
 	if not text:
@@ -48,11 +50,13 @@ def extract_text(line):
 		# Text before a closing tag
 		text = re.findall(r'^(.*\S.*)</',line,re.DOTALL)
 	if not text:
-		raise NameError("ERROR: no text found in line {0}".format(line))
+		logmsg = header(this_name) + "ERROR: no text found in line {0}".format(line)
+		write_log(this_name, logmsg)
+		raise NameError(logmsg)
 	return text[0]
 
 
-def parser(pdbtm_file_path):
+def parser(pdbtm_file_path, this_name):
 	# The resulting object is a dictionary where each 4-letter PDB name corresponds
 	# to all information contained in the database. Each PDB name corresponds to a
 	# 2-entry list, the first entry being the header, the second the body.
@@ -91,7 +95,7 @@ def parser(pdbtm_file_path):
 				if re.search('^\s*<.*/>\s*$', line):
 #					print("O/C:\t"+line)
 					parameters = parse_attributes(line)
-					tag = extract_tag(line)
+					tag = extract_tag(line, this_name)
 					# If the tag accepts multiple instances
 					if tag in open_list_tags:
 						# If the tag is not present yet in the body dictionary
@@ -117,14 +121,14 @@ def parser(pdbtm_file_path):
 #					print("O:\t"+line)
 					parameters = parse_attributes(line)
 					element = [parameters, {}]
-					tag = extract_tag(line)
+					tag = extract_tag(line, this_name)
 					DB.append(element)
 					DB_tagnames.append(tag)
 				# If line contains an opening tag at the beginning
 				elif re.search('^\s*<.*>.*$', line):
 #					print("OT:\t"+line)
-					tag = extract_tag(line)
-					text = extract_text(line).strip() + " "
+					tag = extract_tag(line, this_name)
+					text = extract_text(line, this_name).strip() + " "
 					element = [None, text]
 					DB.append(element)
 					DB_tagnames.append(tag)
@@ -137,8 +141,8 @@ def parser(pdbtm_file_path):
 				# text as the value corresponding to the key tag.
 				if re.search('^\s*<.*>.+</.*>\s*$', line):
 #					print("O+C:\t"+line)
-					tag = extract_tag(line)
-					text = extract_text(line)
+					tag = extract_tag(line, this_name)
+					text = extract_text(line, this_name)
 					DB[-1][1][tag] = text
 				# If line does not contain opening and closing tags
 				else:
@@ -152,10 +156,10 @@ def parser(pdbtm_file_path):
 						# If there is no accumulated text yet and the body of the last element of the DB list is still an empty
 						# dictionary, change it to text and add the first line.
 						if type(DB[-1][1]) == dict:
-							DB[-1][1] = extract_text(line).strip() + " "
+							DB[-1][1] = extract_text(line, this_name).strip() + " "
 						# If there already is accumulated text, just extend the string
 						else:
-							DB[-1][1] += extract_text(line).strip() + " "
+							DB[-1][1] += extract_text(line, this_name).strip() + " "
 					else:
 						raise NameError("ERROR: line {0} is not compliant with the XML format".format(line))
 					# If the last tag name in the DB_tagnames list is a tag accepting multiple instances
@@ -210,26 +214,24 @@ def parser(pdbtm_file_path):
 	DB2 = {}
 	for ns in range(len(DB[0][1]['PDBTM'][1]['pdbtm'])):
 		pdbname = DB[0][1]['PDBTM'][1]['pdbtm'][ns][0]['ID'].upper()
-#		print(pdbname)
-		tmp_struct = DB[0][1]['PDBTM'][1]['pdbtm'][ns]
+		tmp_struct = copy.deepcopy(DB[0][1]['PDBTM'][1]['pdbtm'][ns])
+		tmp_struct[1]['CHAIN'] = {}
+		for nc in range(len(DB[0][1]['PDBTM'][1]['pdbtm'][ns][1]['CHAIN'])):
+			chain = DB[0][1]['PDBTM'][1]['pdbtm'][ns][1]['CHAIN'][nc][0]['CHAINID'].upper()
+			tmp_chain =  DB[0][1]['PDBTM'][1]['pdbtm'][ns][1]['CHAIN'][nc]
+			tmp_struct[1]['CHAIN'][chain] = tmp_chain
 		DB2[pdbname] = tmp_struct
-#	print(ns, DB[0][1]['PDBTM'][1]['pdbtm'][ns])
-
-#	print("Number of entries: {0} {1}".format(len(DB[0][1]['PDBTM'][1]['pdbtm']), len(list(DB2.keys()))))
-	for x in list(DB2.keys()):
-#		print(x[0])
-		print(x.lower())
-#	print(DB2)
 	return DB2
 
 
 def download_structures(database, raw_pdb_dir):
-#	for pdbname in list(database.keys()):
-#		url = 'http://www.rcsb.org/pdb/files/'+pdbname+'.pdb.gz'
-#		local_filename = raw_pdb_dir + pdbname + '.pdb'
-#		with urllib.request.urlopen(url) as response:
-#			with gzip.GzipFile(fileobj=response) as uncompressed, open(local_filename, 'wb') as local_file:
-#				shutil.copyfileobj(uncompressed, local_file)
+	for pdbname in list(database.keys()):
+		url = 'http://www.rcsb.org/pdb/files/'+pdbname+'.pdb.gz'
+		local_filename = raw_pdb_dir + pdbname + '.pdb'
+		if not os.path.exists(local_filename):
+			with urllib.request.urlopen(url) as response:
+				with gzip.GzipFile(fileobj=response) as uncompressed, open(local_filename, 'wb') as local_file:
+					shutil.copyfileobj(uncompressed, local_file)
 
 	downloaded_files = [x[:-4] for x in os.listdir(raw_pdb_dir) if x[-4:]=='.pdb']
 	missing_files_filename = raw_pdb_dir + 'missing_files.txt'
@@ -256,14 +258,15 @@ def generate_raw_pdb_library(locations, pdbtm_file_path):
 			write_log(this_name, logmsg)	
 			raise NameError(logmsg)
 	# Parser
-	database = parser(pdbtm_file_path)
+	database = parser(pdbtm_file_path, this_name)
 
 	# Downloader
 	download_structures(database, locations['raw_pdbs'])
 
-	# Dow	
+	return database
 
 
-DB = parser(sys.argv[1])
-download_structures(DB, sys.argv[2])
-#print(DB)
+DB = parser(sys.argv[1], 'genrlib')
+print(DB)
+#download_structures(DB, sys.argv[2])
+

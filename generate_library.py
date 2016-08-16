@@ -19,9 +19,20 @@ parser.add_argument('-np', '--number_of_procs', nargs=1)
 parser.add_argument('-ot', '--object_thr', nargs=1)
 parser.add_argument('-ct', '--cluster_thr', nargs=1)
 parser.add_argument('-o', '--output_file', nargs=1)
+parser.add_argument('-rf', '--resolution_filter', nargs=1)
+parser.add_argument('-with_nmr', action='store_true')
+parser.add_argument('-ht', '--hole_thr', nargs='?')
+parser.set_defaults(hole_thr = '100')
+
+
 np = int(number_of_procs)
 
 #Add check if main_dir path exists
+
+
+filters = {'resolution' : float(resolution_filter),
+           'NMR' : with_NMR,
+           'hole_thr' : int(hole_thr)}
 
 # execute
 
@@ -32,8 +43,8 @@ pdbtm_data = genrlib.generate_raw_pdb_library(locations, pdbtm_file_path)
 # After downloading, check for existence and then compile a list and a no-list
 # In pdbtm_data output, there must be all info regarding the structures
 
-genclib.generate_chain_pdb_files(locations, pdbtm_data)
-# Here, operate any possible check. The resulting list must be the cleanest possible
+pdbtm_data = genclib.generate_chain_pdb_files(locations, pdbtm_data)
+# Here, operate any possible checks. The resulting list must be the cleanest possible
 # After checking, filter by resolution, then divide by number of TM domains, then create filesystem and add codes
 # Eventually there must be two folders: one with all identified chains, another with the used chains
 
