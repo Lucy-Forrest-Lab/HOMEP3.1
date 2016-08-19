@@ -1,5 +1,5 @@
-[genfsys 2016-08-10 16:16:14] Main directory created: /u/esarti/LoBoS_Workspace_ES/projects/HOMEP/HOMEP3.1/scripts/generate_library/test//HOMEP_3.1_2016_08_10
-[genfsys 2016-08-10 16:16:14] Directory to store raw pdbs created: /u/esarti/LoBoS_Workspace_ES/projects/HOMEP/HOMEP3.1/scripts/generate_library/test//HOMEP_3.1_2016_08_10/raw_pdbs
-[genfsys 2016-08-10 16:16:14] Directory to store curated pdbs created: /u/esarti/LoBoS_Workspace_ES/projects/HOMEP/HOMEP3.1/scripts/generate_library/test//HOMEP_3.1_2016_08_10/pdbs
-[genfsys 2016-08-10 16:16:14] Directory to store alpha superfamilies created: /u/esarti/LoBoS_Workspace_ES/projects/HOMEP/HOMEP3.1/scripts/generate_library/test//HOMEP_3.1_2016_08_10/alpha
-[genfsys 2016-08-10 16:16:14] Directory to store beta superfamilies created: /u/esarti/LoBoS_Workspace_ES/projects/HOMEP/HOMEP3.1/scripts/generate_library/test//HOMEP_3.1_2016_08_10/beta
+[genfsys 2016-08-17 11:58:43] Main directory created: test//HOMEP_3.1_2016_08_17/
+[genfsys 2016-08-17 11:58:43] Directory to store raw pdbs created: test//HOMEP_3.1_2016_08_17/raw_pdbs/
+[genfsys 2016-08-17 11:58:43] Directory to store curated pdbs created: test//HOMEP_3.1_2016_08_17/pdbs/
+[genfsys 2016-08-17 11:58:43] Directory to store alpha superfamilies created: test//HOMEP_3.1_2016_08_17/alpha/
+[genfsys 2016-08-17 11:58:43] Directory to store beta superfamilies created: test//HOMEP_3.1_2016_08_17/beta/

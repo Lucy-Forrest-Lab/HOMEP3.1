@@ -6,17 +6,7 @@
 # Date: Aug 10 2016
 
 import sys, re, urllib.request, gzip, shutil, os, collections, copy
-
-# Support functions
-def write_log(name, text):
-	log_filename = name + '.log'
-	log_file = open(log_filename, 'w')
-	log_file.write(text)
-	log_file.close()
-
-def header(name):
-	return "[" + name + " " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] "
-
+from support import *
 
 def parse_attributes(line):
 	attr = {}
@@ -224,8 +214,8 @@ def parser(pdbtm_file_path, this_name):
 	return DB2
 
 
-def download_structures(database, raw_pdb_dir):
-	for pdbname in list(database.keys()):
+def download_structures(database_namelist, raw_pdb_dir):
+	for pdbname in database_namelist:
 		url = 'http://www.rcsb.org/pdb/files/'+pdbname+'.pdb.gz'
 		local_filename = raw_pdb_dir + pdbname + '.pdb'
 		if not os.path.exists(local_filename):
@@ -235,13 +225,13 @@ def download_structures(database, raw_pdb_dir):
 
 	downloaded_files = [x[:-4] for x in os.listdir(raw_pdb_dir) if x[-4:]=='.pdb']
 	missing_files_filename = raw_pdb_dir + 'missing_files.txt'
-	missing_files_file = open(missing_files_filename, 'w')
-	for database_struct in list(database.keys()):
+	missing_files_file = open(missing_files_filename, 'a')
+	for database_struct in database_namelist:
 		if database_struct not in downloaded_files:
 			missing_files_file.write(database_struct+"\n")
 	missing_files_file.close()
 
-	print(len(downloaded_files), len(database.keys()))
+	print(len(downloaded_files), len(database_namelist))
 
 
 # Library function
@@ -252,21 +242,59 @@ def generate_raw_pdb_library(locations, pdbtm_file_path):
 	version = 3.1
 
 	# Checks
-	for path_name in [locations['installpath']+x for x in locations if x != 'installpath']:
+	for path_name in [locations['mainpath']+locations[x] for x in list(locations.keys()) if x != 'installpath' and x != 'mainpath' and x!= 'main']:
 		if not os.path.exists(path_name):
 			logmsg = header(this_name) + "ERROR: The directory path {0} does not exist. Please generate the file system first.".format(path_name)
 			write_log(this_name, logmsg)	
 			raise NameError(logmsg)
 	# Parser
 	database = parser(pdbtm_file_path, this_name)
+	database_namelist = list(database.keys())
+	shutil.copy(pdbtm_file_path, locations['mainpath']+'pdbtm_database.dat')
+	
 
 	# Downloader
-	download_structures(database, locations['raw_pdbs'])
+	download_structures(database_namelist, locations['mainpath'] + locations['rpdb'])
 
 	return database
 
+def update_raw_pdb_library(locations, pdbtm_file_path):
+	# Hardcoded variables
+	this_name = 'uprlib'
+	indent = " "*len(header(this_name))
+	version = 3.1
 
-DB = parser(sys.argv[1], 'genrlib')
-print(DB)
+	# Checks
+	for path_name in [locations['mainpath']+locations[x] for x in list(locations.keys()) if x != 'installpath' and x != 'mainpath' and x!= 'main']:
+		if not os.path.exists(path_name):
+			logmsg = header(this_name) + "ERROR: The directory path {0} does not exist. Please generate the file system first.".format(path_name)
+			write_log(this_name, logmsg)	
+			raise NameError(logmsg)
+	# Parser
+	database = parser(pdbtm_file_path, this_name)
+	database_namelist = list(database.keys())
+
+	old_pdbtm_file_path = locations['mainpath']+'pdbtm_database.dat'
+	old_database = parser(old_pdbtm_file_path, this_name)
+	old_database_namelist = list(old_database.keys())
+
+	diff_database_namelist = []
+	for struct in database_namelist:
+		if struct not in old_database_namelist:
+			diff_database_namelist.append(struct)
+
+	if not diff_database_namelist:
+		logmsg = header(this_name) + "No updates to be done."
+		write_log(this_name, logmsg)
+		return {}, []
+	
+	# Downloader
+	download_structures(diff_database_namelist, locations['mainpath'] + locations['rpdb'])
+
+	return database, diff_database_namelist
+		
+
+#DB = parser(sys.argv[1], 'genrlib')
+#print(DB)
 #download_structures(DB, sys.argv[2])
 

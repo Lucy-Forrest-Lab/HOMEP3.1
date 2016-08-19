@@ -12,6 +12,8 @@ def OPM_TMdoms():
 	list_file = open(main_dir+'ppm_results/alpha_list.txt', 'r')
 	opm_data = {}
 	for pdb in list_file.read().split('\n'):
+		if not pdb:
+			continue
 		results = open(main_dir + 'ppm_results/data/' + pdb[0:4] + '_results', 'r')
 		units = ''
 		flag = 0
@@ -24,14 +26,15 @@ def OPM_TMdoms():
 		results.close()
 		if flag == 0:
 			datasub_file = open(main_dir+'ppm_results/data/' + pdb[0:4] + '_datasub1', 'r')
-			opm_data[pdb[0:4]] = {}
-			for line in datasub:
+			pdbname = pdb[0:4].upper()
+			opm_data[pdbname] = {}
+			for line in datasub_file:
 				if pdb[0:4] in line:
 					seg = 0
 					fields = line.split(';')
 					chain = fields[1]
 					seg = len(fields[3].split(','))
-					opm_data[pdb[0:4]][chain] = seg
-			datasub.close()
+					opm_data[pdbname][chain] = seg
+			datasub_file.close()
 	list_file.close()
 	return opm_data
