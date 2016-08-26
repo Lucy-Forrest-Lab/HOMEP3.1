@@ -1,0 +1,7 @@
+rpdb		raw_pdbs/
+mainpath		test//HOMEP_3.1_2016_08_23/
+alpha		alpha/
+cpdb		pdbs/
+installpath		test//
+beta		beta/
+main		HOMEP_3.1_2016_08_23/

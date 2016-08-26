@@ -214,6 +214,21 @@ def parser(pdbtm_file_path, this_name):
 	return DB2
 
 
+def mini_parser(pdbtm_file_path, this_name):
+	pdbtm_file = open(pdbtm_file_path, 'r')
+	text = pdbtm_file.read().split('\n')
+	pdbtm_file.close()
+
+	DB = {}
+	for line in text:
+		if not line:
+			continue
+		if re.search('<pdbtm.*>', line):
+			attr = parse_attributes(line)
+			DB[attr['ID']] = [attr, {}]
+	return DB
+
+
 def download_structures(database_namelist, raw_pdb_dir):
 	for pdbname in database_namelist:
 		url = 'http://www.rcsb.org/pdb/files/'+pdbname+'.pdb.gz'
@@ -231,7 +246,7 @@ def download_structures(database_namelist, raw_pdb_dir):
 			missing_files_file.write(database_struct+"\n")
 	missing_files_file.close()
 
-	print(len(downloaded_files), len(database_namelist))
+#	print(len(downloaded_files), len(database_namelist))
 
 
 # Library function
@@ -242,7 +257,7 @@ def generate_raw_pdb_library(locations, pdbtm_file_path):
 	version = 3.1
 
 	# Checks
-	for path_name in [locations['mainpath']+locations[x] for x in list(locations.keys()) if x != 'installpath' and x != 'mainpath' and x!= 'main']:
+	for path_name in [locations['FSYS']['mainpath']+locations['FSYS'][x] for x in list(locations['FSYS'].keys()) if x != 'installpath' and x != 'mainpath' and x!= 'main']:
 		if not os.path.exists(path_name):
 			logmsg = header(this_name) + "ERROR: The directory path {0} does not exist. Please generate the file system first.".format(path_name)
 			write_log(this_name, logmsg)	
@@ -250,11 +265,11 @@ def generate_raw_pdb_library(locations, pdbtm_file_path):
 	# Parser
 	database = parser(pdbtm_file_path, this_name)
 	database_namelist = list(database.keys())
-	shutil.copy(pdbtm_file_path, locations['mainpath']+'pdbtm_database.dat')
+	shutil.copy(pdbtm_file_path, locations['FSYS']['mainpath']+'pdbtm_database.dat')
 	
 
 	# Downloader
-	download_structures(database_namelist, locations['mainpath'] + locations['rpdb'])
+	download_structures(database_namelist, locations['FSYS']['mainpath'] + locations['FSYS']['rpdb'])
 
 	return database
 
@@ -265,7 +280,7 @@ def update_raw_pdb_library(locations, pdbtm_file_path):
 	version = 3.1
 
 	# Checks
-	for path_name in [locations['mainpath']+locations[x] for x in list(locations.keys()) if x != 'installpath' and x != 'mainpath' and x!= 'main']:
+	for path_name in [locations['FSYS']['mainpath']+locations['FSYS'][x] for x in list(locations['FSYS'].keys()) if x != 'installpath' and x != 'mainpath' and x!= 'main']:
 		if not os.path.exists(path_name):
 			logmsg = header(this_name) + "ERROR: The directory path {0} does not exist. Please generate the file system first.".format(path_name)
 			write_log(this_name, logmsg)	
@@ -274,7 +289,7 @@ def update_raw_pdb_library(locations, pdbtm_file_path):
 	database = parser(pdbtm_file_path, this_name)
 	database_namelist = list(database.keys())
 
-	old_pdbtm_file_path = locations['mainpath']+'pdbtm_database.dat'
+	old_pdbtm_file_path = locations['FSYS']['mainpath']+'pdbtm_database.dat'
 	old_database = parser(old_pdbtm_file_path, this_name)
 	old_database_namelist = list(old_database.keys())
 
@@ -289,7 +304,7 @@ def update_raw_pdb_library(locations, pdbtm_file_path):
 		return {}, []
 	
 	# Downloader
-	download_structures(diff_database_namelist, locations['mainpath'] + locations['rpdb'])
+	download_structures(diff_database_namelist, locations['FSYS']['mainpath'] + locations['FSYS']['rpdb'])
 
 	return database, diff_database_namelist
 		

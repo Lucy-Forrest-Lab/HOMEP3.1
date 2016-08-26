@@ -70,19 +70,19 @@ def generate_filesystem(install_path):
 	write_log(this_name, log)
 
 	# Compiling output
-	locations = {}
-	locations['installpath'] = install_path
-	locations['mainpath'] = main_path
-	locations['main'] = main_dir
-	locations['rpdb'] = rpdb_dir
-	locations['cpdb'] = cpdb_dir
-	locations['alpha'] = lib_dir['alpha']
-	locations['beta'] = lib_dir['beta']
+	locations = {'FSYS' : {}, 'OPT' : {}}
+	locations['FSYS']['installpath'] = install_path
+	locations['FSYS']['mainpath'] = main_path
+	locations['FSYS']['main'] = main_dir
+	locations['FSYS']['rpdb'] = rpdb_dir
+	locations['FSYS']['cpdb'] = cpdb_dir
+	locations['FSYS']['alpha'] = lib_dir['alpha']
+	locations['FSYS']['beta'] = lib_dir['beta']
 
-	locations_filename = locations['mainpath'] + '.locations.dat'
+	locations_filename = locations['FSYS']['mainpath'] + '.locations.dat'
 	locations_file = open(locations_filename, 'w')
-	for x in list(locations.keys()):
-		locations_file.write("{0}\t\t{1}".format(x, locations[x]))
+	for x in list(locations['FSYS'].keys()):
+		locations_file.write("{0}\t\t{1}\t\t{2}\n".format('FSYS', x, locations[x]))
 	locations_file.close()
 
 	return locations
@@ -110,6 +110,8 @@ def filesystem_info(main_path):
 	for line in text:
 		if line:
 			fields = line.split()
-			locations[fields[0]] = fields[1]
+			if fields[0] not in locations:
+				locations[fields[0]] = {}
+			locations[fields[0]][fields[1]] = fields[2]
 
 	return locations

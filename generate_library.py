@@ -15,17 +15,15 @@ import argparse, genfsys, genrlib, genclib, straln, clusterize
 parser = argparse.ArgumentParser()
 parser.add_argument('-d', '--install_dir', nargs=1)
 parser.add_argument('-pdbtm', '--pdbtm_file_path', nargs=1)
-#parser.add_argument('-s', '--straln_path', nargs=1)
-#parser.add_argument('-np', '--number_of_procs', nargs=1)
-#parser.add_argument('-ot', '--object_thr', nargs=1)
-#parser.add_argument('-ct', '--cluster_thr', nargs=1)
-#parser.add_argument('-o', '--output_file', nargs=1)
+parser.add_argument('-s', '--straln_path', nargs=1)
+parser.add_argument('-np', '--number_of_procs', nargs=1)
+parser.add_argument('-ot', '--object_thr', nargs=1)
+parser.add_argument('-ct', '--cluster_thr', nargs=1)
 parser.add_argument('-rf', '--resolution_filter', nargs=1)
 parser.add_argument('-with_nmr', action='store_true')
 parser.add_argument('-with_theoretical', action='store_true')
 parser.add_argument('-opm', action='store_true')
 parser.add_argument('-ht', '--hole_thr', nargs='?')
-parser.add_argument('-ot', '--output_tab', nargs='?')
 parser.add_argument('-oh', '--output_homep', nargs='?')
 parser.set_defaults(hole_thr = '100')
 parser.set_defaults(output_tab = 'structure_alignments.dat')
@@ -55,13 +53,11 @@ pdbtm_data = genclib.generate_chain_pdb_files(locations, pdbtm_data, filters)
 # After checking, filter by resolution, then divide by number of TM domains, then create filesystem and add codes
 # Eventually there must be two folders: one with all identified chains, another with the used chains
 
-exit(1)
-
 np = int(parsed.number_of_procs[0])
 
-straln.structure_alignment(locations, str(parsed.straln_path[0]), np)
+table = straln.structure_alignment(locations, str(parsed.straln_path[0]), np, str(parsed.output_tab[0]))
 # Take this part from start_FrTM.py and adapt
 
-homep_library = clusterize.clusterize(locations, pdbtm_data, str(parsed.output_tab[0]), str(parsed.HOMEP_filename[0]), float(parsed.object_thr[0]), float(parsed.cluster_thr[0]))
+homep_library = clusterize.clusterize(locations, pdbtm_data, table, str(parsed.output_tab[0]), str(parsed.HOMEP_filename[0]), float(parsed.object_thr[0]), float(parsed.cluster_thr[0]))
 # Must report each used chain
 # Must output library table

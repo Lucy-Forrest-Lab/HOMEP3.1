@@ -57,13 +57,11 @@ diff_database = genclib.generate_chain_pdb_files(locations, diff_database, filte
 for struct in diff_database_namelist:
 	pdbtm_data[struct] = diff_database[struct]
 
-exit(1)
-
 np = int(parsed.number_of_procs[0])
 
-straln.structure_alignment(locations, str(parsed.straln_path[0]), np)
+table = straln.structure_alignment(locations, str(parsed.straln_path[0]), np, str(parsed.output_tab[0]))
 # Take this part from start_FrTM.py and adapt
 
-homep_library = clusterize.clusterize(locations, pdbtm_data, float(parsed.object_thr[0]), float(parsed.cluster_thr[0]))
+homep_library = clusterize.clusterize(locations, pdbtm_data, table, str(parsed.output_tab[0]), str(parsed.HOMEP_filename[0]), float(parsed.object_thr[0]), float(parsed.cluster_thr[0]))
 # Must report each used chain
 # Must output library table
