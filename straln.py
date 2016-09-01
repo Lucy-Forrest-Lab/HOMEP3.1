@@ -124,7 +124,7 @@ def FrTMjob(data):
 	# (format: CHAIN_X: chain_name, where X={1,2}), and ends with and "END" line.
 	sequence_file = open(sequence_path, 'a')
 	for tmp_filename in sorted(os.listdir(aln_tmpfolder_path)):
-		sequence_file.write("BEGIN \nCHAIN_1: " + target[2]  + "\nCHAIN_2: " + tmp_filename[-10:-4])
+		sequence_file.write("BEGIN \nCHAIN_1: " + target[2]  + "\nCHAIN_2: " + tmp_filename[-10:-4] + "\n")
 		tmp_file = open(aln_tmpfolder_path + tmp_filename)
 		text = tmp_file.read().split('\n')
 		tmp_file.close()
@@ -140,7 +140,7 @@ def FrTMjob(data):
 	# (format: CHAIN_X: chain_name, where X={1,2}), and ends with and "END" line.
 	structure_file = open(structure_path, 'a')
 	for tmp_filename in sorted(os.listdir(straln_tmpfolder_path)):
-		structure_file.write("BEGIN \nCHAIN_1: " + target[2]  + "\nCHAIN_2: " + tmp_filename[-10:-4])
+		structure_file.write("BEGIN \nCHAIN_1: " + target[2]  + "\nCHAIN_2: " + tmp_filename[-10:-4] + "\n")
 		tmp_file = open(straln_tmpfolder_path + tmp_filename)
 		text = tmp_file.read().split('\n')
 		tmp_file.close()
@@ -191,8 +191,14 @@ def make_new_table(locations, external_filename):
 				text = seqaln_file.read().split('\n')
 				seqaln_file.close()
 				for nline in range(len(text)):
+					if not text[nline]:
+						continue
 					fields = text[nline].split()
-					if fields[0] == 'CHAIN_1:':
+					print(seqaln_filename, fields)
+					if fields[0] == 'BEGIN':
+						continue
+					elif fields[0] == 'CHAIN_1:':
+						print("chain_1")
 						chain_1 = fields[1]
 					elif fields[0] == 'CHAIN_2:':
 						chain_2 = fields[1]
@@ -205,6 +211,8 @@ def make_new_table(locations, external_filename):
 					elif fields[0] == 'TM-score':
 						tmscore = fields[1]
 					elif fields[0] == 'END':
+						if not (chain_1 and chain_2 and seq_1 and seq_2):
+							raise NameError("ERROR: file is corrupted")
 						seqid = calculate_seqid((seq_1, seq_2))
 						table_file.write("{0} {1} {2} {3} {4:10.8f} {5:10.8f} {6:10.6f} {7}".format(names[sf[0]], str(int(sf[1])).zfill(3), chain_1, chain_2, seqid, tmscore, RMSD, superfamily_seqaln_path+seqaln_filename))
 						if chain_1 not in table[sf[0]][sf[1]]:

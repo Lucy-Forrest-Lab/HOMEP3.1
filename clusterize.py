@@ -32,7 +32,7 @@ def clusterize(locations, database, table, totaln_filename, HOMEP_filename, seqi
 
 	if not table:
 		table = {}
-		totaln_file = open(totaln_filename, 'r')
+		totaln_file = open(locations['FSYS']['mainpath'] + totaln_filename, 'r')
 		text = totaln_file.read().split("\n")
 		for line in text:
 			if not line:
@@ -63,7 +63,7 @@ def clusterize(locations, database, table, totaln_filename, HOMEP_filename, seqi
 			if structset_1 == structset_2:
 				found = True
 
-	HOMEP_file = open(HOMEP_filename, 'w')
+	HOMEP_file = open(locations['FSYS']['mainpath'] + HOMEP_filename, 'w')
 	HOMEP_library = {}
 	for ss in table:
 		for sf in sorted(list(table[ss].keys)):

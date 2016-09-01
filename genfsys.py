@@ -82,7 +82,7 @@ def generate_filesystem(install_path):
 	locations_filename = locations['FSYS']['mainpath'] + '.locations.dat'
 	locations_file = open(locations_filename, 'w')
 	for x in list(locations['FSYS'].keys()):
-		locations_file.write("{0}\t\t{1}\t\t{2}\n".format('FSYS', x, locations[x]))
+		locations_file.write("{0}\t\t{1}\t\t{2}\n".format('FSYS', x, locations['FSYS'][x]))
 	locations_file.close()
 
 	return locations
@@ -109,9 +109,9 @@ def filesystem_info(main_path):
 	text = locations_file.read().split('\n')
 	for line in text:
 		if line:
+			print(line)
 			fields = line.split()
 			if fields[0] not in locations:
 				locations[fields[0]] = {}
 			locations[fields[0]][fields[1]] = fields[2]
-
 	return locations

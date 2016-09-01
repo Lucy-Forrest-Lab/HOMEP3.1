@@ -301,7 +301,7 @@ def update_raw_pdb_library(locations, pdbtm_file_path):
 	if not diff_database_namelist:
 		logmsg = header(this_name) + "No updates to be done."
 		write_log(this_name, logmsg)
-		return {}, []
+		return database, []
 	
 	# Downloader
 	download_structures(diff_database_namelist, locations['FSYS']['mainpath'] + locations['FSYS']['rpdb'])

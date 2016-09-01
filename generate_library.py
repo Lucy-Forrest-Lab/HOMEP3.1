@@ -22,7 +22,6 @@ parser.add_argument('-ct', '--cluster_thr', nargs=1)
 parser.add_argument('-rf', '--resolution_filter', nargs=1)
 parser.add_argument('-with_nmr', action='store_true')
 parser.add_argument('-with_theoretical', action='store_true')
-parser.add_argument('-opm', action='store_true')
 parser.add_argument('-ht', '--hole_thr', nargs='?')
 parser.add_argument('-oh', '--output_homep', nargs='?')
 parser.set_defaults(hole_thr = '100')
@@ -36,18 +35,21 @@ parsed = parser.parse_args()
 filters = {'resolution' : float(parsed.resolution_filter[0]),
            'NMR' : parsed.with_nmr,
            'THM' : parsed.with_theoretical,
-           'OPM_TMdoms' : parsed.opm,
            'hole_thr' : int(parsed.hole_thr[0])}
 
 # execute
 
+print("GENERATE FILESYSTEM")
 locations = genfsys.generate_filesystem(str(parsed.install_dir[0]))
 
+
+print("GENERATE RAW LIBRARY")
 pdbtm_data = genrlib.generate_raw_pdb_library(locations, str(parsed.pdbtm_file_path[0]))
 # PDB names must be in upper case
 # After downloading, check for existence and then compile a list and a no-list
 # In pdbtm_data output, there must be all info regarding the structures
 
+print("GENERATE CHAIN LIBRARY")
 pdbtm_data = genclib.generate_chain_pdb_files(locations, pdbtm_data, filters)
 # Here, operate any possible checks. The resulting list must be the cleanest possible
 # After checking, filter by resolution, then divide by number of TM domains, then create filesystem and add codes
@@ -55,9 +57,11 @@ pdbtm_data = genclib.generate_chain_pdb_files(locations, pdbtm_data, filters)
 
 np = int(parsed.number_of_procs[0])
 
+print("CALCULATE STRUCTURE ALIGNMENTS")
 table = straln.structure_alignment(locations, str(parsed.straln_path[0]), np, str(parsed.output_tab[0]))
 # Take this part from start_FrTM.py and adapt
 
-homep_library = clusterize.clusterize(locations, pdbtm_data, table, str(parsed.output_tab[0]), str(parsed.HOMEP_filename[0]), float(parsed.object_thr[0]), float(parsed.cluster_thr[0]))
+print("CLUSTERIZE RESULTS")
+homep_library = clusterize.clusterize(locations, pdbtm_data, table, str(parsed.output_tab), str(parsed.output_homep), float(parsed.object_thr[0]), float(parsed.cluster_thr[0]))
 # Must report each used chain
 # Must output library table

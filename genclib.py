@@ -5,7 +5,7 @@
 # Author: Edoardo Sarti
 # Date: Aug 15 2016
 
-import os, shutil, opm
+import os, shutil
 from support import *
 
 def from3to1(resname):
@@ -86,7 +86,7 @@ def PDB_parser(locations, struct):
 				PDB_dict['TITLE'] = ''.join(line.split()[1:])
 
 	PDB_dict['CHAIN'] = {}
-	for chain in res_id:
+	for chain in list(res_ids.keys()):
 		if b_factor[chain] == 0:
 			b_factor[chain] = 'NULL'
 		else:
@@ -102,10 +102,6 @@ def PDB_parser(locations, struct):
 
 # Structure checker
 def checker(locations, database, filters):
-	opm_data = {}
-	if filters['OPM_TMdoms']:
-		opm_data = opm.TMdoms()
-
 	instructions = {}
 	exclusions_filename = locations['FSYS']['mainpath'] + locations['FSYS']['cpdb'] + 'exclusions.txt'
 	exclusions_file = open(exclusions_filename, 'w')
@@ -148,7 +144,7 @@ def checker(locations, database, filters):
 
 			# Strange residues
 			for res in PDB_dict['CHAIN'][chain][1]['RESNAMES']:
-				if from3to1(res) == '0':
+				if res == '0':
 					exclude_chain.append('One or more residues with unsupported names')
 					break
 
@@ -159,14 +155,6 @@ def checker(locations, database, filters):
 				elif PDB_dict['RESOLUTION'] == 0:
 					exclude_chain.append('No resolution information found'.format(filters['resolution']))
 
-
-			# Check consistency with OPM
-			if opm_data and struct in opm_data and chain in opm_data[struct] and chain not in database[struct][1]['CHAIN']:
-				n_opm = int(opm_data[struct][chain])
-#				print(n_pdbtm, n_opm)
-				if n_opm != n_pdbtm:
-					exclude_chain.append('Chain with {0} TM domains has different number of TM domains in OPM: {1}'.format(n_pdbtm, n_opm))
-
 			# Was there something wrong?
 			if not exclude_chain:
 				s_type = database[struct][1]['CHAIN'][chain][0]['TYPE']
@@ -175,6 +163,10 @@ def checker(locations, database, filters):
 				instructions[struct][chain] = (s_type, n_pdbtm)
 				chain_filename = locations['FSYS']['mainpath'] + locations['FSYS']['cpdb'] + struct + '_' + chain + '.pdb'
 				chain_file = open(chain_filename, 'w')
+				struct_filename = locations['FSYS']['mainpath'] + locations['FSYS']['rpdb'] + struct + '.pdb'
+				struct_file = open(struct_filename, 'r')
+				text = struct_file.read().split('\n')
+				struct_file.close()
 				for line in text:
 					if line[0:4] == 'ATOM' and line[21] == chain:
 						chain_file.write(line + '\n')
@@ -217,22 +209,6 @@ def checker(locations, database, filters):
 	return database, instructions
 
 
-def checker_OPM(locations, database, filters):
-	instructions = {}
-	exclusions_filename = locations['FSYS']['mainpath'] + locations['FSYS']['cpdb'] + 'exclusions.txt'
-	exclusions_file = open(exclusions_filename, 'w')
-	tab_filename = locations['FSYS']['mainpath'] + locations['FSYS']['cpdb'] + 'info.txt'
-	tab_file = open(tab_filename, 'w')
-	tab_string = ""
-	OPM_dict = OPM_retriever(locations, struct)
-	for struct in list(database.keys()):
-		PDB_dict = PDB_parser(locations, struct)
-		OPM_dict = OPM_retriever(locations, struct)
-
-		for chain in PDB_dict['CHAIN']:
-			continue
-
-
 def structure_sorter(locations, instructions):
 	ssd = {'alpha' : 'a', 'beta' : 'b'}
 	nprogr = {}
@@ -263,7 +239,7 @@ def generate_chain_pdb_files(locations, database, filters):
 	version = 3.1
 
 	# Checks
-	for path_name in [locations['FSYS']['mainpath'] + locations['FSYS'][x] for x in list(locations.keys()) if x != 'installpath' and x != 'mainpath' and x!= 'main']:
+	for path_name in [locations['FSYS']['mainpath'] + locations['FSYS'][x] for x in list(locations['FSYS'].keys()) if x != 'installpath' and x != 'mainpath' and x!= 'main']:
 		if not os.path.exists(path_name):
 			logmsg = header(this_name) + "ERROR: The directory path {0} does not exist. Please generate the file system first.".format(path_name)
 			write_log(this_name, logmsg)	
@@ -276,3 +252,14 @@ def generate_chain_pdb_files(locations, database, filters):
 	structure_sorter(locations, fs_ordering)
 
 	return database
+
+"""
+import genfsys, genrlib
+filters = {'resolution' : 3.5,
+           'NMR' : False,
+           'THM' : False,
+           'hole_thr' : 100}
+
+locations = genfsys.filesystem_info('test/HOMEP_3.1_2016_09_01/')
+pdbtm_data = generate_chain_pdb_files(locations, genrlib.generate_raw_pdb_library(locations, "pdbtmall_reduced"), filters)
+"""
