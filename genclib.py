@@ -82,8 +82,11 @@ def PDB_parser(locations, struct):
 			if line[60:66]:
 				b_factor[ch_name] += float(line[60:66])
 				b_norm[ch_name] += 1
-			elif line[0:5] == 'TITLE':
-				PDB_dict['TITLE'] = ''.join(line.split()[1:])
+		elif line[0:5] == 'TITLE':
+			if 'TITLE' not in PDB_dict:
+				PDB_dict['TITLE'] = line[10:].rstrip()
+			else:
+				PDB_dict['TITLE'] += line[10:].rstrip()
 
 	PDB_dict['CHAIN'] = {}
 	for chain in list(res_ids.keys()):
@@ -103,11 +106,14 @@ def PDB_parser(locations, struct):
 # Structure checker
 def checker(locations, database, filters):
 	instructions = {}
+	instructions_filename = locations['FSYS']['mainpath'] + '.superfamily_classification.txt'
+	instructions_file = open(instructions_filename, 'w')
 	exclusions_filename = locations['FSYS']['mainpath'] + locations['FSYS']['cpdb'] + 'exclusions.txt'
 	exclusions_file = open(exclusions_filename, 'w')
 	tab_filename = locations['FSYS']['mainpath'] + locations['FSYS']['cpdb'] + 'info.txt'
 	tab_file = open(tab_filename, 'w')
 	tab_string = ""
+	new_database = {}
 	for struct in list(database.keys()):
 		PDB_dict = PDB_parser(locations, struct)
 
@@ -161,6 +167,7 @@ def checker(locations, database, filters):
 				if struct not in instructions:
 					instructions[struct] = {}
 				instructions[struct][chain] = (s_type, n_pdbtm)
+				instructions_file.write("{0}\t{1}\t{2}\n".format(s_type, n_pdbtm, struct+'_'+chain))
 				chain_filename = locations['FSYS']['mainpath'] + locations['FSYS']['cpdb'] + struct + '_' + chain + '.pdb'
 				chain_file = open(chain_filename, 'w')
 				struct_filename = locations['FSYS']['mainpath'] + locations['FSYS']['rpdb'] + struct + '.pdb'
@@ -171,6 +178,15 @@ def checker(locations, database, filters):
 					if line[0:4] == 'ATOM' and line[21] == chain:
 						chain_file.write(line + '\n')
 				chain_file.close()
+				if struct not in new_database:
+					new_database[struct] = []
+					new_database[struct].append(database[struct][0])
+					new_database[struct].append({})
+					for key in [x for x in list(database[struct][1].keys()) if x != 'CHAIN']:
+						new_database[struct][1][key] = database[struct][1][key]
+					new_database[struct][1]['CHAIN'] = {}
+				new_database[struct][1]['CHAIN'][chain] = database[struct][1]['CHAIN'][chain]
+					
 			else:
 #				print(exclude_chain)
 				exclusions_file.write(struct + '_' + chain + '\t\t' + exclude_chain[0] + '\n')
@@ -178,40 +194,41 @@ def checker(locations, database, filters):
 					exclusions_file.write(' '*len(struct) + ' ' + ' '*len(chain) + '\t\t' + exclude_chain[nl] + '\n')
 
 		# Introduce PDB_dict as a key of the database
-		database[struct][1]['FROM_PDB'] = PDB_dict
+		if struct in new_database:
+			new_database[struct][1]['FROM_PDB'] = PDB_dict
 
-		if not tab_string:
-			for key in [x for x in sorted(list(database[struct][1]['FROM_PDB'].keys())) if x != 'CHAIN']:
-				tab_string += "{0:16} ".format(key)
-			tab_string += "{0:5} ".format('CHAIN')
-			for key in [x for x in sorted(list(database[struct][1]['FROM_PDB']['CHAIN'][chain][0].keys())) if x != 'CHAINID']:
-				tab_string += "{0:16} ".format(key)
-			tab_file.write(tab_string[:-1] + "\n")
+			if not tab_string:
+				for key in [x for x in sorted(list(new_database[struct][1]['FROM_PDB'].keys())) if x != 'CHAIN']:
+					tab_string += "{0:16} ".format(key)
+				tab_string += "{0:5} ".format('CHAIN')
+				for key in [x for x in sorted(list(new_database[struct][1]['FROM_PDB']['CHAIN'][chain][0].keys())) if x != 'CHAINID']:
+					tab_string += "{0:16} ".format(key)
+				tab_file.write(tab_string[:-1] + "\n")
 
-		tab_string = ""
-		for key in [x for  x in sorted(list(database[struct][1]['FROM_PDB'].keys())) if x != 'CHAIN']:
-			tab_string += "{0:16} ".format(database[struct][1]['FROM_PDB'][key])
-		counter = 0
-		strlen = len(tab_string)
-		for chain in sorted(list(database[struct][1]['FROM_PDB']['CHAIN'])):
-			if counter > 0:
-				tab_string = " "*strlen
-			tab_string += "{0:5} ".format(database[struct][1]['FROM_PDB']['CHAIN'][chain][0]['CHAINID'])
-			for key in [x for x in sorted(list(database[struct][1]['FROM_PDB']['CHAIN'][chain][0].keys())) if x != 'CHAINID']:
-				tab_string += "{0:16} "
-			tab_file.write(tab_string[:-1] + "\n")
-			counter += 1
-		tab_string = "XXX"
+			tab_string = ""
+			for key in [x for  x in sorted(list(new_database[struct][1]['FROM_PDB'].keys())) if x != 'CHAIN']:
+				tab_string += "{0:16} ".format(new_database[struct][1]['FROM_PDB'][key])
+			counter = 0
+			strlen = len(tab_string)
+			for chain in sorted(list(new_database[struct][1]['FROM_PDB']['CHAIN'])):
+				if counter > 0:
+					tab_string = " "*strlen
+				tab_string += "{0:5} ".format(new_database[struct][1]['FROM_PDB']['CHAIN'][chain][0]['CHAINID'])
+				for key in [x for x in sorted(list(new_database[struct][1]['FROM_PDB']['CHAIN'][chain][0].keys())) if x != 'CHAINID']:
+					tab_string += "{0:16} "
+				tab_file.write(tab_string[:-1] + "\n")
+				counter += 1
+			tab_string = "XXX"
 
 	exclusions_file.close()
+	instructions_file.close()
 	tab_file.close()
 
-	return database, instructions
+	return new_database, instructions
 
 
 def structure_sorter(locations, instructions):
 	ssd = {'alpha' : 'a', 'beta' : 'b'}
-	nprogr = {}
 	for struct in instructions:
 		for chain in instructions[struct]:
 			ss = instructions[struct][chain][0]
@@ -220,15 +237,7 @@ def structure_sorter(locations, instructions):
 			if not os.path.exists(destination_dir):
 				os.mkdir(destination_dir)
 				os.mkdir(destination_dir + 'structures/')
-				nprogr[ntm] = 1
-			else:
-				nprogr[ntm] += 1
 			shutil.copy(locations['FSYS']['mainpath'] + locations['FSYS']['cpdb'] + struct + '_' + chain + '.pdb', destination_dir + 'structures/')
-			code = ssd[ss] + str(ntm).zfill(3) + str(nprogr[ntm]).zfill(6)
-			codes_file = open(destination_dir + 'struct_codes.dat', 'a+')
-			if struct not in codes_file.read().split('\n'):
-				codes_file.write(code + '\t\t' + struct)
-			codes_file.close()
 
 
 # Library function

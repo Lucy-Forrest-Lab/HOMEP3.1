@@ -29,7 +29,6 @@ def clusterize(locations, database, table, totaln_filename, HOMEP_filename, seqi
 	obj_listofsets = []
 	fam_listofsets = []
 
-
 	if not table:
 		table = {}
 		totaln_file = open(locations['FSYS']['mainpath'] + totaln_filename, 'r')
@@ -46,27 +45,34 @@ def clusterize(locations, database, table, totaln_filename, HOMEP_filename, seqi
 				table[fields[0]][fields[1]][fields[2]] = {}
 			table[fields[0]][fields[1]][fields[2]][fields[3]] = (float(fields[4]), float(fields[5]), float(fields[6]), fields[7])
 
+	"""
 	structsets = []
-	for ss in table:
-		for superfamily in sorted(list(table[ss].keys)):
+
+	print(sorted(list(table['alpha'].keys())), sorted(list(table['beta'].keys())))
+
+	for ss in sorted(list(table.keys())):
+		for superfamily in sorted(list(table[ss].keys()), key = lambda x: int(x)):
 			structset = set()
-			for struct in table[ss][superfamily]:
+			for struct in list(table[ss][superfamily].keys()):
 				structsets.append(frozenset(list(table[ss][superfamily][struct].keys())))
 
 	for structset_1 in structsets:
 		found = False
 		for structset_2 in structsets:
+			print("HERE", len(structsets))
 			if structset_1 != structset_2 and structset_1 & structset_2:
-				raise NameError("ERROR: intersection between two Superfamilies", structset_1 & structset_2)
+				raise NameError("ERROR: intersection between two Superfamilies", structset_1 & structset_2, structset_1, structset_2, len(structset_1), len(structset_2), len(structset_1 & structset_2), structset_1 - (structset_1 & structset_2), structset_2 - (structset_1 & structset_2))
 			elif structset_1 == structset_2 and found:
 				raise NameError("ERROR: more than one copy of the same structset")
 			if structset_1 == structset_2:
 				found = True
+	"""
+
 
 	HOMEP_file = open(locations['FSYS']['mainpath'] + HOMEP_filename, 'w')
 	HOMEP_library = {}
-	for ss in table:
-		for sf in sorted(list(table[ss].keys)):
+	for ss in sorted(list(table.keys())):
+		for sf in sorted(list(table[ss].keys()), key = lambda x: int(x)):
 			superfamily_name = ss + str(int(sf))	
 	
 			obj_listofsets = []
@@ -78,8 +84,8 @@ def clusterize(locations, database, table, totaln_filename, HOMEP_filename, seqi
 					# Nonetheless, we do not want to consider these cases as into the same object a priori.
 					if table[ss][sf][s1][s2][1] > tmscore_thr:
 						fam_listofsets.append(frozenset([s1, s2]))
-					if table[ss][sf][s1][s2][0] > seqid_thr:
-						obj_listofsets.append(frozenset([s1, s2]))
+						if table[ss][sf][s1][s2][0] > seqid_thr:
+							obj_listofsets.append(frozenset([s1, s2]))
 
 			obj_sets = merge(obj_listofsets)
 			fam_sets = merge(fam_listofsets)
@@ -114,6 +120,7 @@ def clusterize(locations, database, table, totaln_filename, HOMEP_filename, seqi
 	
 			cf = 0
 			co = 0
+			tmlist = []
 			HOMEP_file.write("Superfamily #{0}\n".format(superfamily_name))
 			for fam in sorted(fl, key=lambda x : -x[1]):
 				HOMEP_file.write("\tFamily #{0}\n".format(cf))
@@ -122,9 +129,30 @@ def clusterize(locations, database, table, totaln_filename, HOMEP_filename, seqi
 						continue
 					HOMEP_file.write("\t\tObject #{0}\n".format(co))
 					for struct in obj[0]:
-						HOMEP_file.write("\t\t\t{0}\t{1}\n".format(struct, database[struct][1]['FROM_PDB']['TITLE']))
+						title = ''
+						if 'TITLE' in database[struct[:4]][1]['FROM_PDB']:
+							title = database[struct[:4]][1]['FROM_PDB']['TITLE']
+						HOMEP_file.write("\t\t\t{0}\t{1}\n".format(struct, title))
+						tmlist.append(struct)
 					co += 1
 				cf += 1
+
+			print(tmlist)
+
+			for s in list(database.keys()):
+				for c in list(database[s][1]['CHAIN'].keys()):
+					struct = s+'_'+c
+					if int(database[s][1]['CHAIN'][c][0]['NUM_TM']) == int(sf) and database[s][1]['CHAIN'][c][0]['TYPE'] == ss and struct not in tmlist:
+						print(struct)
+						HOMEP_file.write("\tFamily #{0}\n".format(cf))
+						HOMEP_file.write("\t\tObject #{0}\n".format(co))
+						title = ''
+						if 'TITLE' in database[s][1]['FROM_PDB']:
+							title = database[struct[:4]][1]['FROM_PDB']['TITLE']
+						HOMEP_file.write("\t\t\t{0}\t{1}\n".format(struct, title))
+						co += 1
+						cf += 1
+
 			HOMEP_library[superfamily_name] = fam_obj_sets
 	HOMEP_file.close()
 	return HOMEP_library

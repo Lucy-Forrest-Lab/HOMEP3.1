@@ -109,7 +109,6 @@ def filesystem_info(main_path):
 	text = locations_file.read().split('\n')
 	for line in text:
 		if line:
-			print(line)
 			fields = line.split()
 			if fields[0] not in locations:
 				locations[fields[0]] = {}
