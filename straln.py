@@ -225,7 +225,11 @@ def make_new_table(locations, external_filename):
 	return table
 							
 
-def structure_alignment(locations, aligner_path, np, external_filename):
+def structure_alignment(options, locations):
+	aligner_path = options['straln_path']
+	np = int(options['number_of_procs'])
+	external_filename = options['output_tab']
+
 	already_processed = []
 	ex_list = {}
 	hidden_repository_filename = locations['FSYS']['mainpath'] + '.structure_alignments.dat'

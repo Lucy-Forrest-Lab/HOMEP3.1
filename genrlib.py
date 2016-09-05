@@ -250,11 +250,13 @@ def download_structures(database_namelist, raw_pdb_dir):
 
 
 # Library function
-def generate_raw_pdb_library(locations, pdbtm_file_path):
+def generate_raw_pdb_library(options, locations):
 	# Hardcoded variables
 	this_name = 'genrlib'
 	indent = " "*len(header(this_name))
 	version = 3.1
+
+	pdbtm_file_path = options['pdbtm_file_path']
 
 	# Checks
 	for path_name in [locations['FSYS']['mainpath']+locations['FSYS'][x] for x in list(locations['FSYS'].keys()) if x != 'installpath' and x != 'mainpath' and x!= 'main']:
@@ -307,9 +309,3 @@ def update_raw_pdb_library(locations, pdbtm_file_path):
 	download_structures(diff_database_namelist, locations['FSYS']['mainpath'] + locations['FSYS']['rpdb'])
 
 	return database, diff_database_namelist
-		
-
-#DB = parser(sys.argv[1], 'genrlib')
-#print(DB)
-#download_structures(DB, sys.argv[2])
-

@@ -1,67 +1,73 @@
 # Name: generate_library.py
 # Language: python3
-# Libraries: argparse, genfsys, genrlib, genclib, straln, clusterize
+# Libraries: genfsys, genrlib, genclib, straln, clusterize
 # Description: Generates HOMEP library from scratch
 # Author: Edoardo Sarti
-# Date: Aug 10 2016
+# Date: Sep 4 2016
 
-#import os, sys, multiprocessing, subprocess, re, time
+import genfsys
+import genrlib
+import genclib
+import straln
+import clusterize
 
-import argparse, genfsys, genrlib, genclib, straln, clusterize
-
-# parser and checks
-
-# python generate_library.py -d -pdbtm -rf 3.5
-parser = argparse.ArgumentParser()
-parser.add_argument('-d', '--install_dir', nargs=1)
-parser.add_argument('-pdbtm', '--pdbtm_file_path', nargs=1)
-parser.add_argument('-s', '--straln_path', nargs=1)
-parser.add_argument('-np', '--number_of_procs', nargs=1)
-parser.add_argument('-ot', '--object_thr', nargs=1)
-parser.add_argument('-ct', '--cluster_thr', nargs=1)
-parser.add_argument('-rf', '--resolution_filter', nargs=1)
-parser.add_argument('-with_nmr', action='store_true')
-parser.add_argument('-with_theoretical', action='store_true')
-parser.add_argument('-ht', '--hole_thr', nargs='?')
-parser.add_argument('-oh', '--output_homep', nargs='?')
-parser.set_defaults(hole_thr = '100')
-parser.set_defaults(output_tab = 'structure_alignments.dat')
-parser.set_defaults(output_homep = 'HOMEP3.1.dat')
-parsed = parser.parse_args()
-
-#Add check if main_dir path exists
-
-
-filters = {'resolution' : float(parsed.resolution_filter[0]),
-           'NMR' : parsed.with_nmr,
-           'THM' : parsed.with_theoretical,
-           'hole_thr' : int(parsed.hole_thr[0])}
-
-# execute
 
 print("GENERATE FILESYSTEM")
-locations = genfsys.generate_filesystem(str(parsed.install_dir[0]))
+# Parse the command line and generate filesystem.
+# The main directory of the filesystem is created in the installation
+# path and is named 'HOMEP_3.1_YYYY_MM_DD', where YYYY, MM and DD are
+# the year, month and day of creation.
+# Return three lists:
+#  options - contains all command line options
+#  filters - contains all activated filters (see genclib)
+#  locations - contains all addresses of the filesystem locations
+# Write two hidden files in the main folder of the fileystem:
+#  .options - transcription of the options list
+#  .locations - transcription of the locations list
+options, filters, locations = genfsys.generate_filesystem()
 
 
 print("GENERATE RAW LIBRARY")
-pdbtm_data = genrlib.generate_raw_pdb_library(locations, str(parsed.pdbtm_file_path[0]))
-# PDB names must be in upper case
-# After downloading, check for existence and then compile a list and a no-list
-# In pdbtm_data output, there must be all info regarding the structures
+# Parse the PDTBM library file, download pdb files from PDB, builds a
+# comprehensive nested structure containing all information from the PDBTM
+# library file.
+# PDB codes are stored in upper case (PDB-style).
+# Return a nested structure:
+#  pdbtm_data - contains all information parsed from the PDBTM library file
+#               It is a dictionary whose keys are the PDB 4-letter codes
+#               (capitalized). Each entry is a list of two elements, the first
+#               containing the dictionary of general information keywords (the
+#               ones contained in the opening tag) and the second containing
+#               the dictionary of specific information tags (the nested tags).
+#               The latter is build recursively in the same way (it is itself
+#               a two-element list). When a tag is non-unique (i.e., there can
+#               be more than one 'CHAIN' tag), the dictionary entry contains a
+#               list, with one element for each tag. Each element is again a
+#               two-element list...
+pdbtm_data = genrlib.generate_raw_pdb_library(options, locations)
+
 
 print("GENERATE CHAIN LIBRARY")
-pdbtm_data = genclib.generate_chain_pdb_files(locations, pdbtm_data, filters)
-# Here, operate any possible checks. The resulting list must be the cleanest possible
-# After checking, filter by resolution, then divide by number of TM domains, then create filesystem and add codes
-# Eventually there must be two folders: one with all identified chains, another with the used chains
+# Thoroghly check the pdb files, divide them into chains, selects chains
+# according to the filters, compiles a smaller database containing only the
+# selected chains.
+# The selected chains are copied into the pdb chain folder and into the
+# proper superfamily folder (in its structure/ subfolder).
+# Return the nested structure:
+#  core_pdbtm_data - structured as pdbtm_data, but only containing the
+#                    selected chains. In addition to the information from the
+#                    PDBTM library file, each selected chain will have a new
+#                    'FROM_PDB' keyword holding a dictionary with the
+#                    information retrieved from the pdb file.
+core_pdbtm_data = genclib.generate_chain_pdb_files(filters, locations, pdbtm_data)
 
-np = int(parsed.number_of_procs[0])
 
 print("CALCULATE STRUCTURE ALIGNMENTS")
-table = straln.structure_alignment(locations, str(parsed.straln_path[0]), np, str(parsed.output_tab[0]))
+table = straln.structure_alignment(options, locations)
 # Take this part from start_FrTM.py and adapt
 
+
 print("CLUSTERIZE RESULTS")
-homep_library = clusterize.clusterize(locations, pdbtm_data, table, str(parsed.output_tab), str(parsed.output_homep), float(parsed.object_thr[0]), float(parsed.cluster_thr[0]))
+homep_library = clusterize.clusterize(options, locations, core_pdbtm_data, table)
 # Must report each used chain
 # Must output library table

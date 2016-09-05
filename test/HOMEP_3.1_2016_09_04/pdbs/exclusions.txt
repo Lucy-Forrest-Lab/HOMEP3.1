@@ -1,0 +1,445 @@
+4A98_I		Not contained in PDB_TM biological form
+      		Resolution is higher than 3.5
+4A98_J		Not contained in PDB_TM biological form
+      		Resolution is higher than 3.5
+4A98_D		Resolution is higher than 3.5
+4A98_A		Resolution is higher than 3.5
+4A98_G		Not contained in PDB_TM biological form
+      		Resolution is higher than 3.5
+4A98_H		Not contained in PDB_TM biological form
+      		Resolution is higher than 3.5
+4A98_F		Not contained in PDB_TM biological form
+      		Resolution is higher than 3.5
+4A98_E		Resolution is higher than 3.5
+4A98_C		Resolution is higher than 3.5
+4A98_B		Resolution is higher than 3.5
+5AN8_D		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+5AN8_A		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+5AN8_C		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+5AN8_B		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+4AIQ_A		Contains hole longer than 1 residues
+5A6G_A		Contains hole longer than 1 residues
+      		One or more residues with unsupported names
+      		Resolution is higher than 3.5
+5A6G_B		Resolution is higher than 3.5
+3ABK_H		Chain does not cross the membrane
+3ABK_R		Chain does not cross the membrane
+3ABK_S		Chain does not cross the membrane
+3ABK_G		Contains hole longer than 1 residues
+3ABK_F		Chain does not cross the membrane
+3ABK_E		Chain does not cross the membrane
+3ABK_T		Contains hole longer than 1 residues
+3ABK_U		Chain does not cross the membrane
+4AGE_D		Resolution is higher than 3.5
+4AGE_A		Resolution is higher than 3.5
+4AGE_G		Resolution is higher than 3.5
+4AGE_F		Resolution is higher than 3.5
+4AGE_E		Resolution is higher than 3.5
+4AGE_C		Resolution is higher than 3.5
+4AGE_B		Resolution is higher than 3.5
+4A97_I		Not contained in PDB_TM biological form
+4A97_J		Not contained in PDB_TM biological form
+4A97_G		Not contained in PDB_TM biological form
+4A97_H		Not contained in PDB_TM biological form
+4A97_F		Not contained in PDB_TM biological form
+5A6E_D		Chain does not cross the membrane
+      		One or more residues with unsupported names
+      		Resolution is higher than 3.5
+5A6E_A		Contains hole longer than 1 residues
+      		One or more residues with unsupported names
+      		Resolution is higher than 3.5
+5A6E_C		Chain does not cross the membrane
+      		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+5A6E_B		Resolution is higher than 3.5
+2ABM_H		Not contained in PDB_TM biological form
+2ABM_G		Not contained in PDB_TM biological form
+2ABM_F		Not contained in PDB_TM biological form
+2ABM_E		Not contained in PDB_TM biological form
+2AD0_D		Theoretical model
+2AD0_A		Chain does not cross the membrane
+      		Theoretical model
+2AD0_C		Theoretical model
+2AD0_B		Chain does not cross the membrane
+      		Theoretical model
+3AEF_A		Chain does not cross the membrane
+3AEF_B		Chain does not cross the membrane
+2AC6_A		Theoretical model
+3AE4_A		Chain does not cross the membrane
+3AE4_B		Chain does not cross the membrane
+2AFL_D		Theoretical model
+2AFL_A		Theoretical model
+2AFL_C		Theoretical model
+2AFL_B		Theoretical model
+5A41_D		Not contained in PDB_TM biological form
+5A41_H		Chain does not cross the membrane
+      		Contains hole longer than 1 residues
+5A41_G		Not contained in PDB_TM biological form
+      		Contains hole longer than 1 residues
+5A41_F		Chain does not cross the membrane
+      		Contains hole longer than 1 residues
+5A41_E		Not contained in PDB_TM biological form
+      		Contains hole longer than 1 residues
+5A41_C		Not contained in PDB_TM biological form
+2A0D_A		Theoretical model
+5A2O_A		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+5A2O_B		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+4A82_D		Not contained in PDB_TM biological form
+4A82_C		Not contained in PDB_TM biological form
+3ABV_A		Chain does not cross the membrane
+3ABV_B		Chain does not cross the membrane
+1AIG_O		Not contained in PDB_TM biological form
+1AIG_N		Not contained in PDB_TM biological form
+1AIG_P		Not contained in PDB_TM biological form
+2AKI_Z		Resolution is higher than 3.5
+2AKI_Y		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+2AKI_A		Resolution is higher than 3.5
+2AKI_X		Resolution is higher than 3.5
+2AKI_C		Resolution is higher than 3.5
+2AKI_B		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3AE7_D		Resolution is higher than 3.5
+3AE7_A		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+3AE7_C		Resolution is higher than 3.5
+3AE7_B		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+2A06_I		Chain does not cross the membrane
+      		Contains hole longer than 1 residues
+2A06_O		Chain does not cross the membrane
+      		Contains hole longer than 1 residues
+2A06_H		Chain does not cross the membrane
+2A06_F		Chain does not cross the membrane
+2A06_B		Chain does not cross the membrane
+      		Contains hole longer than 1 residues
+2A06_J		Chain does not cross the membrane
+2A06_A		Chain does not cross the membrane
+2A06_V		Chain does not cross the membrane
+      		Contains hole longer than 1 residues
+2A06_N		Chain does not cross the membrane
+2A06_S		Chain does not cross the membrane
+2A06_U		Chain does not cross the membrane
+3AE5_A		Chain does not cross the membrane
+3AE5_B		Chain does not cross the membrane
+1A11_A		NMR structure
+4A79_B		Not contained in PDB_TM biological form
+2AMK_A		Theoretical model
+      		Contains hole longer than 1 residues
+2AGV_B		Not contained in PDB_TM biological form
+3AEA_A		Chain does not cross the membrane
+3AEA_B		Chain does not cross the membrane
+5AJI_D		Contains hole longer than 1 residues
+5AJI_A		Contains hole longer than 1 residues
+5AJI_G		Contains hole longer than 1 residues
+5AJI_F		Contains hole longer than 1 residues
+5AJI_E		Contains hole longer than 1 residues
+5AJI_C		Contains hole longer than 1 residues
+5AJI_B		Contains hole longer than 1 residues
+4AMJ_A		Contains hole longer than 1 residues
+4AMJ_B		Not contained in PDB_TM biological form
+      		Contains hole longer than 1 residues
+5A1S_D		Not contained in PDB_TM biological form
+5A1S_C		Not contained in PDB_TM biological form
+      		Contains hole longer than 1 residues
+5A1S_B		Contains hole longer than 1 residues
+3AG4_H		Chain does not cross the membrane
+3AG4_R		Chain does not cross the membrane
+3AG4_S		Chain does not cross the membrane
+3AG4_G		Contains hole longer than 1 residues
+3AG4_F		Chain does not cross the membrane
+3AG4_E		Chain does not cross the membrane
+3AG4_T		Contains hole longer than 1 residues
+3AG4_U		Chain does not cross the membrane
+4AMI_A		Contains hole longer than 1 residues
+4AMI_B		Not contained in PDB_TM biological form
+      		Contains hole longer than 1 residues
+5A44_A		Contains hole longer than 1 residues
+3AEG_A		Chain does not cross the membrane
+3AEG_B		Chain does not cross the membrane
+3AE3_A		Chain does not cross the membrane
+3AE3_B		Chain does not cross the membrane
+4AFK_A		Contains hole longer than 1 residues
+3AE1_A		Chain does not cross the membrane
+3AE1_B		Chain does not cross the membrane
+3ABL_H		Chain does not cross the membrane
+3ABL_R		Chain does not cross the membrane
+3ABL_S		Chain does not cross the membrane
+3ABL_G		Contains hole longer than 1 residues
+3ABL_F		Chain does not cross the membrane
+3ABL_E		Chain does not cross the membrane
+3ABL_T		Contains hole longer than 1 residues
+3ABL_U		Chain does not cross the membrane
+1A91_A		NMR structure
+4AC5_H		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+4AC5_M		Resolution is higher than 3.5
+4AC5_C		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+4AC5_L		Resolution is higher than 3.5
+5A63_B		Contains hole longer than 1 residues
+3AEB_A		Chain does not cross the membrane
+3AEB_B		Chain does not cross the membrane
+2A65_A		Contains hole longer than 1 residues
+3A0B_Z		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0B_I		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0B_Y		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0B_M		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0B_O		Chain does not cross the membrane
+      		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0B_H		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0B_K		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0B_X		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0B_F		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0B_E		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0B_C		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0B_L		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0B_T		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0B_J		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0B_D		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0B_A		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0B_V		Chain does not cross the membrane
+      		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0B_U		Chain does not cross the membrane
+      		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0B_B		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0B_N		Contains hole longer than 1 residues
+      		One or more residues with unsupported names
+      		Resolution is higher than 3.5
+4A7A_B		Not contained in PDB_TM biological form
+3A3Y_B		Contains hole longer than 1 residues
+5ABB_Z		Resolution is higher than 3.5
+5ABB_A		Resolution is higher than 3.5
+5ABB_B		Resolution is higher than 3.5
+3AG2_H		Chain does not cross the membrane
+3AG2_R		Chain does not cross the membrane
+3AG2_S		Chain does not cross the membrane
+3AG2_G		Contains hole longer than 1 residues
+3AG2_F		Chain does not cross the membrane
+3AG2_E		Chain does not cross the membrane
+3AG2_T		Contains hole longer than 1 residues
+3AG2_U		Chain does not cross the membrane
+4AIN_A		Contains hole longer than 1 residues
+4AIN_B		Contains hole longer than 1 residues
+1AFO_A		NMR structure
+1AFO_B		NMR structure
+3AM6_D		Contains hole longer than 1 residues
+3AM6_A		Contains hole longer than 1 residues
+3AM6_C		Contains hole longer than 1 residues
+3AM6_B		Contains hole longer than 1 residues
+2ACZ_A		Chain does not cross the membrane
+2ACZ_B		Chain does not cross the membrane
+5AEX_I		Not contained in PDB_TM biological form
+      		Contains hole longer than 1 residues
+5AEX_J		Not contained in PDB_TM biological form
+      		Contains hole longer than 1 residues
+5AEX_D		Not contained in PDB_TM biological form
+5AEX_H		Not contained in PDB_TM biological form
+      		Contains hole longer than 1 residues
+5AEX_F		Not contained in PDB_TM biological form
+5AEX_E		Not contained in PDB_TM biological form
+4A01_A		Contains hole longer than 1 residues
+4A01_B		Contains hole longer than 1 residues
+3ABM_H		Chain does not cross the membrane
+3ABM_R		Chain does not cross the membrane
+3ABM_S		Chain does not cross the membrane
+3ABM_G		Contains hole longer than 1 residues
+3ABM_F		Chain does not cross the membrane
+3ABM_E		Chain does not cross the membrane
+3ABM_T		Contains hole longer than 1 residues
+3ABM_U		Chain does not cross the membrane
+2AKH_Z		Resolution is higher than 3.5
+2AKH_Y		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+2AKH_A		Resolution is higher than 3.5
+2AKH_X		Resolution is higher than 3.5
+2AKH_C		Resolution is higher than 3.5
+2AKH_B		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+5AF1_B		Not contained in PDB_TM biological form
+2A9H_A		NMR structure
+2A9H_D		NMR structure
+2A9H_E		Chain does not cross the membrane
+      		NMR structure
+2A9H_C		NMR structure
+2A9H_B		NMR structure
+1AIJ_T		Not contained in PDB_TM biological form
+1AIJ_R		Not contained in PDB_TM biological form
+1AIJ_S		Not contained in PDB_TM biological form
+3AED_D		Resolution is higher than 3.5
+3AED_A		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+3AED_C		Resolution is higher than 3.5
+3AED_B		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5A40_D		Not contained in PDB_TM biological form
+      		Resolution is higher than 3.5
+5A40_A		Resolution is higher than 3.5
+5A40_H		Not contained in PDB_TM biological form
+      		Resolution is higher than 3.5
+5A40_G		Not contained in PDB_TM biological form
+      		Resolution is higher than 3.5
+5A40_F		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5A40_E		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5A40_C		Not contained in PDB_TM biological form
+      		Resolution is higher than 3.5
+5A40_B		Resolution is higher than 3.5
+4AGF_D		Resolution is higher than 3.5
+4AGF_A		Resolution is higher than 3.5
+4AGF_G		Resolution is higher than 3.5
+4AGF_F		Resolution is higher than 3.5
+4AGF_E		Resolution is higher than 3.5
+4AGF_C		Resolution is higher than 3.5
+4AGF_B		Resolution is higher than 3.5
+5A8E_A		Contains hole longer than 1 residues
+4A4M_B		Not contained in PDB_TM biological form
+3AOA_A		Contains hole longer than 1 residues
+3AOA_C		Contains hole longer than 1 residues
+3AOA_B		Contains hole longer than 1 residues
+2A95_B		Theoretical model
+      		Contains hole longer than 1 residues
+5A45_A		Contains hole longer than 1 residues
+3AEH_A		Contains hole longer than 1 residues
+3AEH_B		Contains hole longer than 1 residues
+3A0H_Z		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0H_I		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0H_Y		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0H_M		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0H_O		Chain does not cross the membrane
+      		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0H_H		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0H_K		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0H_X		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0H_F		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0H_E		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0H_C		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0H_L		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0H_T		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0H_J		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0H_D		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0H_A		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0H_V		Chain does not cross the membrane
+      		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0H_U		Chain does not cross the membrane
+      		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0H_B		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3A0H_N		Contains hole longer than 1 residues
+      		One or more residues with unsupported names
+      		Resolution is higher than 3.5
+3AEE_A		Chain does not cross the membrane
+3AEE_B		Chain does not cross the membrane
+3AEC_D		Resolution is higher than 3.5
+3AEC_A		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+3AEC_C		Resolution is higher than 3.5
+3AEC_B		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5A6U_B		Resolution is higher than 3.5
+5A6U_A		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+5A6U_G		Resolution is higher than 3.5
+5A43_D		Not contained in PDB_TM biological form
+      		Contains hole longer than 1 residues
+5A43_A		Contains hole longer than 1 residues
+5A43_C		Not contained in PDB_TM biological form
+      		Contains hole longer than 1 residues
+5A43_B		Contains hole longer than 1 residues
+3AE9_A		Chain does not cross the membrane
+3AE9_B		Chain does not cross the membrane
+3AE2_A		Chain does not cross the membrane
+3AE2_B		Chain does not cross the membrane
+3AG3_H		Chain does not cross the membrane
+3AG3_R		Chain does not cross the membrane
+3AG3_S		Chain does not cross the membrane
+3AG3_G		Contains hole longer than 1 residues
+3AG3_F		Chain does not cross the membrane
+3AG3_E		Chain does not cross the membrane
+3AG3_T		Contains hole longer than 1 residues
+3AG3_U		Chain does not cross the membrane
+2AH3_A		Theoretical model
+2AH3_B		Not contained in PDB_TM biological form
+      		Theoretical model
+5A2N_A		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+5A2N_B		Contains hole longer than 1 residues
+      		Resolution is higher than 3.5
+3AE8_A		Chain does not cross the membrane
+3AE8_B		Chain does not cross the membrane
+3AE6_A		Chain does not cross the membrane
+3AE6_B		Chain does not cross the membrane
+3ANZ_Z		Not contained in PDB_TM biological form
+3ANZ_W		Not contained in PDB_TM biological form
+3ANZ_H		Not contained in PDB_TM biological form
+3ANZ_K		Not contained in PDB_TM biological form
+3ANZ_X		Not contained in PDB_TM biological form
+3ANZ_R		Not contained in PDB_TM biological form
+3ANZ_I		Not contained in PDB_TM biological form
+3ANZ_J		Not contained in PDB_TM biological form
+3ANZ_S		Not contained in PDB_TM biological form
+3ANZ_L		Not contained in PDB_TM biological form
+3ANZ_N		Not contained in PDB_TM biological form
+3ANZ_M		Not contained in PDB_TM biological form
+3ANZ_Y		Not contained in PDB_TM biological form
+3ANZ_O		Not contained in PDB_TM biological form
+3ANZ_Q		Not contained in PDB_TM biological form
+3ANZ_T		Not contained in PDB_TM biological form
+3ANZ_V		Not contained in PDB_TM biological form
+3ANZ_U		Not contained in PDB_TM biological form
+3ANZ_P		Not contained in PDB_TM biological form
+4AIP_A		Contains hole longer than 1 residues
+4AIP_C		Contains hole longer than 1 residues
+4AIP_B		Contains hole longer than 1 residues
+3AG1_H		Chain does not cross the membrane
+3AG1_R		Chain does not cross the membrane
+3AG1_S		Chain does not cross the membrane
+3AG1_G		Contains hole longer than 1 residues
+3AG1_F		Chain does not cross the membrane
+3AG1_E		Chain does not cross the membrane
+3AG1_T		Contains hole longer than 1 residues
+3AG1_U		Chain does not cross the membrane

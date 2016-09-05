@@ -241,7 +241,7 @@ def structure_sorter(locations, instructions):
 
 
 # Library function
-def generate_chain_pdb_files(locations, database, filters):
+def generate_chain_pdb_files(filters, locations, database):
 	# Hardcoded variables
 	this_name = 'genclib'
 	indent = " "*len(header(this_name))
@@ -261,14 +261,3 @@ def generate_chain_pdb_files(locations, database, filters):
 	structure_sorter(locations, fs_ordering)
 
 	return database
-
-"""
-import genfsys, genrlib
-filters = {'resolution' : 3.5,
-           'NMR' : False,
-           'THM' : False,
-           'hole_thr' : 100}
-
-locations = genfsys.filesystem_info('test/HOMEP_3.1_2016_09_01/')
-pdbtm_data = generate_chain_pdb_files(locations, genrlib.generate_raw_pdb_library(locations, "pdbtmall_reduced"), filters)
-"""

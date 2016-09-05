@@ -5,19 +5,58 @@
 # Author: Edoardo Sarti
 # Date: Aug 10 2016
 
-import sys, os, datetime
+import sys, os, datetime, argparse
 from support import *
 
+def main_parser():
+	parser = argparse.ArgumentParser()
+	parser.add_argument('-d', '--install_dir', nargs=1)
+	parser.add_argument('-pdbtm', '--pdbtm_file_path', nargs=1)
+	parser.add_argument('-s', '--straln_path', nargs=1)
+	parser.add_argument('-np', '--number_of_procs', nargs=1)
+	parser.add_argument('-ot', '--object_thr', nargs=1)
+	parser.add_argument('-ct', '--cluster_thr', nargs=1)
+	parser.add_argument('-rf', '--resolution_filter', nargs=1)
+	parser.add_argument('-with_nmr', action='store_true')
+	parser.add_argument('-with_theoretical', action='store_true')
+	parser.add_argument('-ht', '--hole_thr', nargs='?')
+	parser.add_argument('-oh', '--output_homep', nargs='?')
+	parser.set_defaults(hole_thr = '100')
+	parser.set_defaults(output_tab = 'structure_alignments.dat')
+	parser.set_defaults(output_homep = 'HOMEP3.1.dat')
+	parsed = parser.parse_args()
+
+	options = {}
+	for x in sorted(parsed.__dict__):
+		if type(parsed.__dict__[x]) == list:
+			print(x, parsed.__dict__[x][0])
+			options[x] = parsed.__dict__[x][0]
+		else:
+			print(x, parsed.__dict__[x])
+			options[x] = parsed.__dict__[x]
+
+	filters = {'resolution' : float(parsed.resolution_filter[0]),
+	           'NMR' : parsed.with_nmr,
+	           'THM' : parsed.with_theoretical,
+	           'hole_thr' : int(parsed.hole_thr[0])}
+
+	return options, filters
+
+
+
 # Library function
-def generate_filesystem(install_path):
+def generate_filesystem():
 	# Hardcoded variables
 	this_name = 'genfsys'
 	indent = " "*len(header(this_name))
 	version = 3.1
 	other_versions_allowed = True
 
+	# Run command line parser
+	options, filters = main_parser()
+
 	# Define folder names
-	install_path += '/'
+	install_path = options['install_dir'] + '/'
 	main_dir = 'HOMEP_' + str(version) + '_' + datetime.datetime.now().strftime("%Y_%m_%d") + '/'
 	main_path = install_path + main_dir
 	rpdb_dir = 'raw_pdbs/'
@@ -85,7 +124,13 @@ def generate_filesystem(install_path):
 		locations_file.write("{0}\t\t{1}\t\t{2}\n".format('FSYS', x, locations['FSYS'][x]))
 	locations_file.close()
 
-	return locations
+	options_filename = locations['FSYS']['mainpath'] + '.options.dat'
+	options_file = open(options_filename, 'w')
+	for x in list(options.keys()):
+		options_file.write("{0}\t\t{1}\n".format(x, options[x]))
+	options_file.close()
+
+	return options, filters, locations
 
 
 def filesystem_info(main_path):

@@ -25,7 +25,12 @@ def merge(lsts):
 	return sets
 
 
-def clusterize(locations, database, table, totaln_filename, HOMEP_filename, seqid_thr, tmscore_thr):
+def clusterize(options, locations, database, table):
+	totaln_filename = options['output_tab']
+	HOMEP_filename = options['output_homep']
+	seqid_thr = float(options['object_thr'])
+	tmscore_thr = float(options['cluster_thr'])
+
 	obj_listofsets = []
 	fam_listofsets = []
 
@@ -44,29 +49,6 @@ def clusterize(locations, database, table, totaln_filename, HOMEP_filename, seqi
 			if not fields[2] in table[fields[0]][fields[1]]:
 				table[fields[0]][fields[1]][fields[2]] = {}
 			table[fields[0]][fields[1]][fields[2]][fields[3]] = (float(fields[4]), float(fields[5]), float(fields[6]), fields[7])
-
-	"""
-	structsets = []
-
-	print(sorted(list(table['alpha'].keys())), sorted(list(table['beta'].keys())))
-
-	for ss in sorted(list(table.keys())):
-		for superfamily in sorted(list(table[ss].keys()), key = lambda x: int(x)):
-			structset = set()
-			for struct in list(table[ss][superfamily].keys()):
-				structsets.append(frozenset(list(table[ss][superfamily][struct].keys())))
-
-	for structset_1 in structsets:
-		found = False
-		for structset_2 in structsets:
-			print("HERE", len(structsets))
-			if structset_1 != structset_2 and structset_1 & structset_2:
-				raise NameError("ERROR: intersection between two Superfamilies", structset_1 & structset_2, structset_1, structset_2, len(structset_1), len(structset_2), len(structset_1 & structset_2), structset_1 - (structset_1 & structset_2), structset_2 - (structset_1 & structset_2))
-			elif structset_1 == structset_2 and found:
-				raise NameError("ERROR: more than one copy of the same structset")
-			if structset_1 == structset_2:
-				found = True
-	"""
 
 
 	HOMEP_file = open(locations['FSYS']['mainpath'] + HOMEP_filename, 'w')
@@ -90,12 +72,6 @@ def clusterize(locations, database, table, totaln_filename, HOMEP_filename, seqi
 			obj_sets = merge(obj_listofsets)
 			fam_sets = merge(fam_listofsets)
 
-#		print("Superfamily #{0}".format(superfamily_name))
-#		for obj in obj_sets:
-#			print("Object")
-#			for struct in obj:
-#				print(struct)
-	
 			fam_obj_sets = []
 			for nfam in range(len(fam_sets)):
 				fam_obj_sets.append(set([]))

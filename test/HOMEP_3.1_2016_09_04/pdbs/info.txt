@@ -1,0 +1,397 @@
+RESOLUTION       RFACTOR          TECHNIQUE        TITLE            CHAIN AVG_BFACTOR      NRES            
+             2.0 NULL             X-RAY            BOVINE HEART CYTOCHROME C OXIDASE AT THE NO-BOUND FULLY REDUCED STATE (50K) A     {0:16} {0:16}
+                                                                                                                               B     {0:16} {0:16}
+                                                                                                                               C     {0:16} {0:16}
+                                                                                                                               D     {0:16} {0:16}
+                                                                                                                               E     {0:16} {0:16}
+                                                                                                                               F     {0:16} {0:16}
+                                                                                                                               G     {0:16} {0:16}
+                                                                                                                               H     {0:16} {0:16}
+                                                                                                                               I     {0:16} {0:16}
+                                                                                                                               J     {0:16} {0:16}
+                                                                                                                               K     {0:16} {0:16}
+                                                                                                                               L     {0:16} {0:16}
+                                                                                                                               M     {0:16} {0:16}
+                                                                                                                               N     {0:16} {0:16}
+                                                                                                                               O     {0:16} {0:16}
+                                                                                                                               P     {0:16} {0:16}
+                                                                                                                               Q     {0:16} {0:16}
+                                                                                                                               R     {0:16} {0:16}
+                                                                                                                               S     {0:16} {0:16}
+                                                                                                                               T     {0:16} {0:16}
+                                                                                                                               U     {0:16} {0:16}
+                                                                                                                               V     {0:16} {0:16}
+                                                                                                                               W     {0:16} {0:16}
+                                                                                                                               X     {0:16} {0:16}
+                                                                                                                               Y     {0:16} {0:16}
+                                                                                                                               Z     {0:16} {0:16}
+             2.8           0.3712 X-RAY            K+ COMPLEX OF THE NAK CHANNEL A     {0:16} {0:16}
+                                                                                 B     {0:16} {0:16}
+            3.34 X-RAY            X-RAY STRUCTURE OF A PENTAMERIC LIGAND GATED ION CHANNEL FROM ERWINIA CHRYSANTHEMI (ELIC) IN COMPLEX WITH ZOPICLONE A     {0:16} {0:16}
+                                                                                                                                                      B     {0:16} {0:16}
+                                                                                                                                                      C     {0:16} {0:16}
+                                                                                                                                                      D     {0:16} {0:16}
+                                                                                                                                                      E     {0:16} {0:16}
+                                                                                                                                                      F     {0:16} {0:16}
+                                                                                                                                                      G     {0:16} {0:16}
+                                                                                                                                                      H     {0:16} {0:16}
+                                                                                                                                                      I     {0:16} {0:16}
+                                                                                                                                                      J     {0:16} {0:16}
+            2.45 X-RAY            BROMIDE-BOUND FORM OF HALORHODOPSIN FROM HALOBACTERIUM SALINARUM IN A NEW RHOMBOHEDRAL CRYSTAL FORM A     {0:16} {0:16}
+             3.2            0.325 X-RAY            CRYSTAL STRUCTURE OF AQUAPORIN Z TETRAMER REVEALS BOTH OPEN AND CLOSED WATER-CONDUCTING CHANNELS A     {0:16} {0:16}
+                                                                                                                                                    B     {0:16} {0:16}
+                                                                                                                                                    C     {0:16} {0:16}
+                                                                                                                                                    D     {0:16} {0:16}
+                                                                                                                                                    E     {0:16} {0:16}
+                                                                                                                                                    F     {0:16} {0:16}
+                                                                                                                                                    G     {0:16} {0:16}
+                                                                                                                                                    H     {0:16} {0:16}
+             2.8            0.343 X-RAY            CRYSTAL STRUCTURE OF PORCINE HEART MITOCHONDRIAL COMPLEX II WITH AN EMPTY QUINONE-BINDING POCKET A     {0:16} {0:16}
+                                                                                                                                                    B     {0:16} {0:16}
+                                                                                                                                                    C     {0:16} {0:16}
+                                                                                                                                                    D     {0:16} {0:16}
+            1.47 X-RAY            CRYSTAL STRUCTURE OF CANDIDA ALBICANS MEP2 A     {0:16} {0:16}
+            2.91            0.402 X-RAY            CRYSTAL STRUCTURE OF PORCINE HEART MITOCHONDRIAL COMPLEX II BOUND WITH 2-IODO-N-METHYL-BENZAMIDE A     {0:16} {0:16}
+                                                                                                                                                    B     {0:16} {0:16}
+                                                                                                                                                    C     {0:16} {0:16}
+                                                                                                                                                    D     {0:16} {0:16}
+             2.2            0.347 X-RAY            CRYSTAL STRUCTURE OF OUTER MEMBRANE PROTEIN PORB FROM NEISSERIA MENINGITIDIS IN COMPLEX WITH SUCROSE X     {0:16} {0:16}
+            2.17 X-RAY            CRYSTAL STRUCTURE OF A DUAL TOPOLOGY FLUORIDE ION CHANNEL A     {0:16} {0:16}
+                                                                                            B     {0:16} {0:16}
+                                                                                            C     {0:16} {0:16}
+                                                                                            D     {0:16} {0:16}
+                                                                                            E     {0:16} {0:16}
+                                                                                            F     {0:16} {0:16}
+                                                                                            G     {0:16} {0:16}
+                                                                                            H     {0:16} {0:16}
+             2.4           0.3694 X-RAY            SUCROSE-SPECIFIC PORIN, WITH BOUND SUCROSE MOLECULES P     {0:16} {0:16}
+                                                                                                        Q     {0:16} {0:16}
+                                                                                                        R     {0:16} {0:16}
+             2.4           0.3116 X-RAY            SUCROSE-SPECIFIC PORIN P     {0:16} {0:16}
+                                                                          Q     {0:16} {0:16}
+                                                                          R     {0:16} {0:16}
+             2.0 NULL             ELECTRON         FITTED MODEL OF STAPHYLOCOCCUS AUREUS SAV1866 MODEL ABC TRANSPORTER IN THE HUMAN CYSTIC FIBROSIS TRANSMEMBRANE CONDUCTANCE REGULATOR VOLUME MAP EMD-1966. A     {0:16} {0:16}
+                                                                                                                                                                                                             B     {0:16} {0:16}
+                                                                                                                                                                                                             C     {0:16} {0:16}
+                                                                                                                                                                                                             D     {0:16} {0:16}
+             1.9           0.3854 X-RAY            CRYSTAL STRUCTURE OF PHARAONIS HALORHODOPSIN IN COMPLEX WITH AZIDE ION A     {0:16} {0:16}
+                                                                                                                          B     {0:16} {0:16}
+                                                                                                                          D     {0:16} {0:16}
+            3.24             0.37 X-RAY            CRYSTAL STRUCTURE OF PORCINE HEART MITOCHONDRIAL COMPLEX II BOUND WITH N-BIPHENYL-3-YL-2-TRIFLUOROMETHYL-BENZAMIDE A     {0:16} {0:16}
+                                                                                                                                                                      B     {0:16} {0:16}
+                                                                                                                                                                      C     {0:16} {0:16}
+                                                                                                                                                                      D     {0:16} {0:16}
+             2.6            0.343 X-RAY            PHOTOSYNTHETIC REACTION CENTER FROM RHODOBACTER SPHAEROIDES IN THE D+QB-CHARGE SEPARATED STATE H     {0:16} {0:16}
+                                                                                                                                                  L     {0:16} {0:16}
+                                                                                                                                                  M     {0:16} {0:16}
+                                                                                                                                                  N     {0:16} {0:16}
+                                                                                                                                                  O     {0:16} {0:16}
+                                                                                                                                                  P     {0:16} {0:16}
+            2.15 X-RAY            HALORHODOPSIN FROM HALOBACTERIUM SALINARUM IN A NEW RHOMBOHEDRAL CRYSTAL FORM A     {0:16} {0:16}
+             2.1            0.374 X-RAY            BOVINE CYTOCHROME BC1 COMPLEX WITH STIGMATELLIN BOUND A     {0:16} {0:16}
+                                                                                                         B     {0:16} {0:16}
+                                                                                                         C     {0:16} {0:16}
+                                                                                                         D     {0:16} {0:16}
+                                                                                                         E     {0:16} {0:16}
+                                                                                                         F     {0:16} {0:16}
+                                                                                                         G     {0:16} {0:16}
+                                                                                                         H     {0:16} {0:16}
+                                                                                                         I     {0:16} {0:16}
+                                                                                                         J     {0:16} {0:16}
+                                                                                                         N     {0:16} {0:16}
+                                                                                                         O     {0:16} {0:16}
+                                                                                                         P     {0:16} {0:16}
+                                                                                                         Q     {0:16} {0:16}
+                                                                                                         R     {0:16} {0:16}
+                                                                                                         S     {0:16} {0:16}
+                                                                                                         T     {0:16} {0:16}
+                                                                                                         U     {0:16} {0:16}
+                                                                                                         V     {0:16} {0:16}
+                                                                                                         W     {0:16} {0:16}
+            3.41            0.451 X-RAY            CRYSTAL STRUCTURE OF PORCINE HEART MITOCHONDRIAL COMPLEX II BOUND WITH 2-METHYL-N-(3-ISOPROPOXY-PHENYL)-BENZAMIDE A     {0:16} {0:16}
+                                                                                                                                                                     B     {0:16} {0:16}
+                                                                                                                                                                     C     {0:16} {0:16}
+                                                                                                                                                                     D     {0:16} {0:16}
+            1.89            0.256 X-RAY            CRYSTAL STRUCTURE OF HUMAN MONOAMINE OXIDASE B (MAO B) IN COMPLEX WITH PIOGLITAZONE A     {0:16} {0:16}
+                                                                                                                                       B     {0:16} {0:16}
+            1.95            0.249 X-RAY            CRYSTAL STRUCTURE OF HUMAN PS-1 GSH-ANALOG COMPLEX A     {0:16} {0:16}
+             2.4            0.354 X-RAY            CRYSTAL STRUCTURE OF THE SR CA2+-ATPASE WITH BHQ AND TG A     {0:16} {0:16}
+                                                                                                           B     {0:16} {0:16}
+            3.39            0.442 X-RAY            CRYSTAL STRUCTURE OF PORCINE HEART MITOCHONDRIAL COMPLEX II BOUND WITH N-(3-DIMETHYLAMINOMETHYL-PHENYL)-2-TRIFLUOROMETHYL-BENZAMIDE A     {0:16} {0:16}
+                                                                                                                                                                                       B     {0:16} {0:16}
+                                                                                                                                                                                       C     {0:16} {0:16}
+                                                                                                                                                                                       D     {0:16} {0:16}
+            1.89 NULL             X-RAY            ALPHA-HEMOLYSIN FROM STAPHYLOCOCCUS AUREUS A     {0:16} {0:16}
+                                                                                              B     {0:16} {0:16}
+                                                                                              C     {0:16} {0:16}
+                                                                                              D     {0:16} {0:16}
+                                                                                              E     {0:16} {0:16}
+                                                                                              F     {0:16} {0:16}
+                                                                                              G     {0:16} {0:16}
+             2.5 X-RAY            CRYSTAL STRUCTURE OF THE SODIUM-DEPENDENT CITRATE SYMPORTER SECITS FORM SALMONELLA ENTERICA. A     {0:16} {0:16}
+                                                                                                                               B     {0:16} {0:16}
+                                                                                                                               C     {0:16} {0:16}
+                                                                                                                               D     {0:16} {0:16}
+            2.05 NULL             X-RAY            BOVINE HEART CYTOCHROME C OXIDASE IN THE CYANIDE ION-BOUND FULLY REDUCED STATE AT 100 K A     {0:16} {0:16}
+                                                                                                                                           B     {0:16} {0:16}
+                                                                                                                                           C     {0:16} {0:16}
+                                                                                                                                           D     {0:16} {0:16}
+                                                                                                                                           E     {0:16} {0:16}
+                                                                                                                                           F     {0:16} {0:16}
+                                                                                                                                           G     {0:16} {0:16}
+                                                                                                                                           H     {0:16} {0:16}
+                                                                                                                                           I     {0:16} {0:16}
+                                                                                                                                           J     {0:16} {0:16}
+                                                                                                                                           K     {0:16} {0:16}
+                                                                                                                                           L     {0:16} {0:16}
+                                                                                                                                           M     {0:16} {0:16}
+                                                                                                                                           N     {0:16} {0:16}
+                                                                                                                                           O     {0:16} {0:16}
+                                                                                                                                           P     {0:16} {0:16}
+                                                                                                                                           Q     {0:16} {0:16}
+                                                                                                                                           R     {0:16} {0:16}
+                                                                                                                                           S     {0:16} {0:16}
+                                                                                                                                           T     {0:16} {0:16}
+                                                                                                                                           U     {0:16} {0:16}
+                                                                                                                                           V     {0:16} {0:16}
+                                                                                                                                           W     {0:16} {0:16}
+                                                                                                                                           X     {0:16} {0:16}
+                                                                                                                                           Y     {0:16} {0:16}
+                                                                                                                                           Z     {0:16} {0:16}
+            3.27            0.422 X-RAY            CRYSTAL STRUCTURE OF PORCINE HEART MITOCHONDRIAL COMPLEX II BOUND WITH N-BIPHENYL-3-YL-2-IODO-BENZAMIDE A     {0:16} {0:16}
+                                                                                                                                                           B     {0:16} {0:16}
+                                                                                                                                                           C     {0:16} {0:16}
+                                                                                                                                                           D     {0:16} {0:16}
+            3.35            0.315 X-RAY            CRYSTAL STRUCTURE OF PORCINE HEART MITOCHONDRIAL COMPLEX II BOUND WITH 2-NITRO-N-PHENYL-BENZAMIDE A     {0:16} {0:16}
+                                                                                                                                                     B     {0:16} {0:16}
+                                                                                                                                                     C     {0:16} {0:16}
+                                                                                                                                                     D     {0:16} {0:16}
+            3.14             0.34 X-RAY            CRYSTAL STRUCTURE OF PORCINE HEART MITOCHONDRIAL COMPLEX II BOUND WITH N-PHENYL-2-(TRIFLUOROMETHYL)-BENZAMIDE A     {0:16} {0:16}
+                                                                                                                                                                 B     {0:16} {0:16}
+                                                                                                                                                                 C     {0:16} {0:16}
+                                                                                                                                                                 D     {0:16} {0:16}
+             2.1 NULL             X-RAY            BOVINE HEART CYTOCHROME C OXIDASE AT THE FULLY OXIDIZED STATE (15-S X-RAY EXPOSURE DATASET) A     {0:16} {0:16}
+                                                                                                                                               B     {0:16} {0:16}
+                                                                                                                                               C     {0:16} {0:16}
+                                                                                                                                               D     {0:16} {0:16}
+                                                                                                                                               E     {0:16} {0:16}
+                                                                                                                                               F     {0:16} {0:16}
+                                                                                                                                               G     {0:16} {0:16}
+                                                                                                                                               H     {0:16} {0:16}
+                                                                                                                                               I     {0:16} {0:16}
+                                                                                                                                               J     {0:16} {0:16}
+                                                                                                                                               K     {0:16} {0:16}
+                                                                                                                                               L     {0:16} {0:16}
+                                                                                                                                               M     {0:16} {0:16}
+                                                                                                                                               N     {0:16} {0:16}
+                                                                                                                                               O     {0:16} {0:16}
+                                                                                                                                               P     {0:16} {0:16}
+                                                                                                                                               Q     {0:16} {0:16}
+                                                                                                                                               R     {0:16} {0:16}
+                                                                                                                                               S     {0:16} {0:16}
+                                                                                                                                               T     {0:16} {0:16}
+                                                                                                                                               U     {0:16} {0:16}
+                                                                                                                                               V     {0:16} {0:16}
+                                                                                                                                               W     {0:16} {0:16}
+                                                                                                                                               X     {0:16} {0:16}
+                                                                                                                                               Y     {0:16} {0:16}
+                                                                                                                                               Z     {0:16} {0:16}
+             2.4 X-RAY            MALTOPORIN SUCROSE COMPLEX A     {0:16} {0:16}
+                                                             B     {0:16} {0:16}
+                                                             C     {0:16} {0:16}
+             3.4 ELECTRON         CRYO-EM STRUCTURE OF THE HUMAN GAMMA-SECRETASE COMPLEX AT 3.4 ANGSTROM RESOLUTION. A     {0:16} {0:16}
+                                                                                                                     B     {0:16} {0:16}
+                                                                                                                     C     {0:16} {0:16}
+                                                                                                                     D     {0:16} {0:16}
+             3.0            0.342 X-RAY            CRYSTAL STRUCTURE OF PORCINE HEART MITOCHONDRIAL COMPLEX II BOUND WITH N-(3-PHENOXY-PHENYL)-2-TRIFLUOROMETHYL-BENZAMIDE A     {0:16} {0:16}
+                                                                                                                                                                           B     {0:16} {0:16}
+                                                                                                                                                                           C     {0:16} {0:16}
+                                                                                                                                                                           D     {0:16} {0:16}
+             1.7            0.308 X-RAY            CRYSTAL STRUCTURE OF HUMAN MONOAMINE OXIDASE B (MAO B) IN COMPLEX WITH ROSIGLITAZONE A     {0:16} {0:16}
+                                                                                                                                        B     {0:16} {0:16}
+             2.8            0.421 X-RAY            CRYSTAL STRUCTURE OF THE SODIUM-POTASSIUM PUMP WITH BOUND POTASSIUM AND OUABAIN A     {0:16} {0:16}
+                                                                                                                                   B     {0:16} {0:16}
+                                                                                                                                   G     {0:16} {0:16}
+             1.8 NULL             X-RAY            BOVINE HEART CYTOCHROME C OXIDASE IN THE CARBON MONOXIDE-BOUND FULLY REDUCED STATE AT 100 K A     {0:16} {0:16}
+                                                                                                                                               B     {0:16} {0:16}
+                                                                                                                                               C     {0:16} {0:16}
+                                                                                                                                               D     {0:16} {0:16}
+                                                                                                                                               E     {0:16} {0:16}
+                                                                                                                                               F     {0:16} {0:16}
+                                                                                                                                               G     {0:16} {0:16}
+                                                                                                                                               H     {0:16} {0:16}
+                                                                                                                                               I     {0:16} {0:16}
+                                                                                                                                               J     {0:16} {0:16}
+                                                                                                                                               K     {0:16} {0:16}
+                                                                                                                                               L     {0:16} {0:16}
+                                                                                                                                               M     {0:16} {0:16}
+                                                                                                                                               N     {0:16} {0:16}
+                                                                                                                                               O     {0:16} {0:16}
+                                                                                                                                               P     {0:16} {0:16}
+                                                                                                                                               Q     {0:16} {0:16}
+                                                                                                                                               R     {0:16} {0:16}
+                                                                                                                                               S     {0:16} {0:16}
+                                                                                                                                               T     {0:16} {0:16}
+                                                                                                                                               U     {0:16} {0:16}
+                                                                                                                                               V     {0:16} {0:16}
+                                                                                                                                               W     {0:16} {0:16}
+                                                                                                                                               X     {0:16} {0:16}
+                                                                                                                                               Y     {0:16} {0:16}
+                                                                                                                                               Z     {0:16} {0:16}
+             3.1 X-RAY            CRYSTAL STRUCTURE OF BETP WITH ASYMMETRIC PROTOMERS. A     {0:16} {0:16}
+                                                                                       B     {0:16} {0:16}
+                                                                                       C     {0:16} {0:16}
+             3.4 X-RAY            CRYSTAL STRUCTURE OF MA-ICMT B     {0:16} {0:16}
+             3.1            0.429 X-RAY            COMPLEX II (SUCCINATE DEHYDROGENASE) FROM E. COLI WITH ATPENIN A5 INHIBITOR CO-CRYSTALLIZED AT THE UBIQUINONE BINDING SITE A     {0:16} {0:16}
+                                                                                                                                                                              B     {0:16} {0:16}
+                                                                                                                                                                              C     {0:16} {0:16}
+                                                                                                                                                                              D     {0:16} {0:16}
+             3.2 X-RAY            CRYSTAL STRUCTURE OF SACCHAROMYCES CEREVISIAE MEP2 A     {0:16} {0:16}
+                                                                                     B     {0:16} {0:16}
+                                                                                     C     {0:16} {0:16}
+                                                                                     D     {0:16} {0:16}
+                                                                                     E     {0:16} {0:16}
+                                                                                     F     {0:16} {0:16}
+                                                                                     H     {0:16} {0:16}
+                                                                                     I     {0:16} {0:16}
+                                                                                     J     {0:16} {0:16}
+            1.95 NULL             X-RAY            BOVINE HEART CYTOCHROME C OXIDASE AT THE FULLY OXIDIZED STATE (200-S X-RAY EXPOSURE DATASET) A     {0:16} {0:16}
+                                                                                                                                                B     {0:16} {0:16}
+                                                                                                                                                C     {0:16} {0:16}
+                                                                                                                                                D     {0:16} {0:16}
+                                                                                                                                                E     {0:16} {0:16}
+                                                                                                                                                F     {0:16} {0:16}
+                                                                                                                                                G     {0:16} {0:16}
+                                                                                                                                                H     {0:16} {0:16}
+                                                                                                                                                I     {0:16} {0:16}
+                                                                                                                                                J     {0:16} {0:16}
+                                                                                                                                                K     {0:16} {0:16}
+                                                                                                                                                L     {0:16} {0:16}
+                                                                                                                                                M     {0:16} {0:16}
+                                                                                                                                                N     {0:16} {0:16}
+                                                                                                                                                O     {0:16} {0:16}
+                                                                                                                                                P     {0:16} {0:16}
+                                                                                                                                                Q     {0:16} {0:16}
+                                                                                                                                                R     {0:16} {0:16}
+                                                                                                                                                S     {0:16} {0:16}
+                                                                                                                                                T     {0:16} {0:16}
+                                                                                                                                                U     {0:16} {0:16}
+                                                                                                                                                V     {0:16} {0:16}
+                                                                                                                                                W     {0:16} {0:16}
+                                                                                                                                                X     {0:16} {0:16}
+                                                                                                                                                Y     {0:16} {0:16}
+                                                                                                                                                Z     {0:16} {0:16}
+            1.64 X-RAY            CRYSTAL STRUCTURE OF CANDIDA ALBICANS MEP2 A     {0:16} {0:16}
+                                                                             B     {0:16} {0:16}
+             2.2            0.342 X-RAY            PHOTOSYNTHETIC REACTION CENTER FROM RHODOBACTER SPHAEROIDES IN THE CHARGE-NEUTRAL DQAQB STATE H     {0:16} {0:16}
+                                                                                                                                                 L     {0:16} {0:16}
+                                                                                                                                                 M     {0:16} {0:16}
+                                                                                                                                                 R     {0:16} {0:16}
+                                                                                                                                                 S     {0:16} {0:16}
+                                                                                                                                                 T     {0:16} {0:16}
+             3.3 X-RAY            CRYSTAL STRUCTURE OF THE LIGHT-ACTIVATED CONSTITUTIVELY ACTIVE N2C,M257Y,D282C RHODOPSIN MUTANT IN COMPLEX WITH A PEPTIDE RESEMBLING THE C-TERMINUS OF THE GALPHA-PROTEIN SUBUNIT (GACT) A     {0:16} {0:16}
+                                                                                                                                                                                                                           B     {0:16} {0:16}
+             2.0           0.3675 X-RAY            CRYSTAL STRUCTURE OF HALORHODOPSIN FROM NATRONOMONAS PHARAONIS A     {0:16} {0:16}
+                                                                                                                  B     {0:16} {0:16}
+                                                                                                                  D     {0:16} {0:16}
+            1.16            0.278 X-RAY            CRYSTAL STRUCTURE OF HUMAN PS-1 A     {0:16} {0:16}
+            3.22            0.401 X-RAY            CRYSTAL STRUCTURE OF PORCINE HEART MITOCHONDRIAL COMPLEX II BOUND WITH ATPENIN A5 A     {0:16} {0:16}
+                                                                                                                                     B     {0:16} {0:16}
+                                                                                                                                     C     {0:16} {0:16}
+                                                                                                                                     D     {0:16} {0:16}
+            3.31            0.434 X-RAY            CRYSTAL STRUCTURE OF PORCINE HEART MITOCHONDRIAL COMPLEX II BOUND WITH N-(3-PENTAFLUOROPHENYLOXY-PHENYL)-2-TRIFLUOROMETHYL-BENZAMIDE A     {0:16} {0:16}
+                                                                                                                                                                                        B     {0:16} {0:16}
+                                                                                                                                                                                        C     {0:16} {0:16}
+                                                                                                                                                                                        D     {0:16} {0:16}
+             3.1            0.341 X-RAY            CRYSTAL STRUCTURE OF PORCINE HEART MITOCHONDRIAL COMPLEX II BOUND WITH 2-HYDROXY-N-PHENYL-BENZAMIDE A     {0:16} {0:16}
+                                                                                                                                                       B     {0:16} {0:16}
+                                                                                                                                                       C     {0:16} {0:16}
+                                                                                                                                                       D     {0:16} {0:16}
+             1.8 NULL             X-RAY            BOVINE HEART CYTOCHROME C OXIDASE IN THE NITRIC OXIDE-BOUND FULLY REDUCED STATE AT 100 K A     {0:16} {0:16}
+                                                                                                                                            B     {0:16} {0:16}
+                                                                                                                                            C     {0:16} {0:16}
+                                                                                                                                            D     {0:16} {0:16}
+                                                                                                                                            E     {0:16} {0:16}
+                                                                                                                                            F     {0:16} {0:16}
+                                                                                                                                            G     {0:16} {0:16}
+                                                                                                                                            H     {0:16} {0:16}
+                                                                                                                                            I     {0:16} {0:16}
+                                                                                                                                            J     {0:16} {0:16}
+                                                                                                                                            K     {0:16} {0:16}
+                                                                                                                                            L     {0:16} {0:16}
+                                                                                                                                            M     {0:16} {0:16}
+                                                                                                                                            N     {0:16} {0:16}
+                                                                                                                                            O     {0:16} {0:16}
+                                                                                                                                            P     {0:16} {0:16}
+                                                                                                                                            Q     {0:16} {0:16}
+                                                                                                                                            R     {0:16} {0:16}
+                                                                                                                                            S     {0:16} {0:16}
+                                                                                                                                            T     {0:16} {0:16}
+                                                                                                                                            U     {0:16} {0:16}
+                                                                                                                                            V     {0:16} {0:16}
+                                                                                                                                            W     {0:16} {0:16}
+                                                                                                                                            X     {0:16} {0:16}
+                                                                                                                                            Y     {0:16} {0:16}
+                                                                                                                                            Z     {0:16} {0:16}
+             2.4            0.368 X-RAY            NA+ COMPLEX OF THE NAK CHANNEL A     {0:16} {0:16}
+                                                                                  B     {0:16} {0:16}
+             3.4             0.38 X-RAY            CRYSTAL STRUCTURE OF PORCINE HEART MITOCHONDRIAL COMPLEX II BOUND WITH N-(3-ISOPROPOXY-PHENYL)-2-TRIFLUOROMETHYLBENZAMIDE A     {0:16} {0:16}
+                                                                                                                                                                             B     {0:16} {0:16}
+                                                                                                                                                                             C     {0:16} {0:16}
+                                                                                                                                                                             D     {0:16} {0:16}
+             3.4            0.449 X-RAY            CRYSTAL STRUCTURE OF PORCINE HEART MITOCHONDRIAL COMPLEX II BOUND WITH N-(3-ISOPROPOXY-PHENYL)-PHTHALAMICACID A     {0:16} {0:16}
+                                                                                                                                                                 B     {0:16} {0:16}
+                                                                                                                                                                 C     {0:16} {0:16}
+                                                                                                                                                                 D     {0:16} {0:16}
+             2.3 X-RAY            CRYSTAL STRUCTURE OF ALPHA-HEMOLYSIN A     {0:16} {0:16}
+                                                                       B     {0:16} {0:16}
+                                                                       C     {0:16} {0:16}
+                                                                       D     {0:16} {0:16}
+                                                                       E     {0:16} {0:16}
+                                                                       F     {0:16} {0:16}
+                                                                       G     {0:16} {0:16}
+                                                                       H     {0:16} {0:16}
+                                                                       I     {0:16} {0:16}
+                                                                       J     {0:16} {0:16}
+                                                                       K     {0:16} {0:16}
+                                                                       L     {0:16} {0:16}
+                                                                       M     {0:16} {0:16}
+                                                                       N     {0:16} {0:16}
+                                                                       O     {0:16} {0:16}
+                                                                       P     {0:16} {0:16}
+                                                                       Q     {0:16} {0:16}
+                                                                       R     {0:16} {0:16}
+                                                                       S     {0:16} {0:16}
+                                                                       T     {0:16} {0:16}
+                                                                       U     {0:16} {0:16}
+                                                                       V     {0:16} {0:16}
+                                                                       W     {0:16} {0:16}
+                                                                       X     {0:16} {0:16}
+                                                                       Y     {0:16} {0:16}
+                                                                       Z     {0:16} {0:16}
+             2.2 NULL             X-RAY            BOVINE HEART CYTOCHROME C OXIDASE IN THE CARBON MONOXIDE-BOUND FULLY REDUCED STATE AT 280 K A     {0:16} {0:16}
+                                                                                                                                               B     {0:16} {0:16}
+                                                                                                                                               C     {0:16} {0:16}
+                                                                                                                                               D     {0:16} {0:16}
+                                                                                                                                               E     {0:16} {0:16}
+                                                                                                                                               F     {0:16} {0:16}
+                                                                                                                                               G     {0:16} {0:16}
+                                                                                                                                               H     {0:16} {0:16}
+                                                                                                                                               I     {0:16} {0:16}
+                                                                                                                                               J     {0:16} {0:16}
+                                                                                                                                               K     {0:16} {0:16}
+                                                                                                                                               L     {0:16} {0:16}
+                                                                                                                                               M     {0:16} {0:16}
+                                                                                                                                               N     {0:16} {0:16}
+                                                                                                                                               O     {0:16} {0:16}
+                                                                                                                                               P     {0:16} {0:16}
+                                                                                                                                               Q     {0:16} {0:16}
+                                                                                                                                               R     {0:16} {0:16}
+                                                                                                                                               S     {0:16} {0:16}
+                                                                                                                                               T     {0:16} {0:16}
+                                                                                                                                               U     {0:16} {0:16}
+                                                                                                                                               V     {0:16} {0:16}
+                                                                                                                                               W     {0:16} {0:16}
+                                                                                                                                               X     {0:16} {0:16}
+                                                                                                                                               Y     {0:16} {0:16}
+                                                                                                                                               Z     {0:16} {0:16}
