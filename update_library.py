@@ -1,74 +1,118 @@
 # Name: generate_library.py
 # Language: python3
-# Libraries: argparse, genfsys, genrlib, genclib, straln, clusterize
-# Description: Updates HOMEP library
+# Libraries: genfsys, genrlib, genclib, straln, clusterize
+# Description: Generates HOMEP library from scratch
 # Author: Edoardo Sarti
-# Date: Aug 17 2016
+# Date: Sep 4 2016
 
-#import os, sys, multiprocessing, subprocess, re, time
-
-import argparse, genfsys, genrlib, genclib, straln, clusterize
-
-# parser and checks
-
-# python generate_library.py -d -pdbtm -rf 3.5
-parser = argparse.ArgumentParser()
-parser.add_argument('-m', '--main_dir', nargs=1)
-parser.add_argument('-pdbtm', '--pdbtm_file_path', nargs=1)
-parser.add_argument('-s', '--straln_path', nargs=1)
-parser.add_argument('-np', '--number_of_procs', nargs=1)
-parser.add_argument('-ot', '--object_thr', nargs=1)
-parser.add_argument('-ct', '--cluster_thr', nargs=1)
-parser.add_argument('-rf', '--resolution_filter', nargs=1)
-parser.add_argument('-with_nmr', action='store_true')
-parser.add_argument('-with_theoretical', action='store_true')
-parser.add_argument('-ht', '--hole_thr', nargs='?')
-parser.add_argument('-oh', '--output_homep', nargs='?')
-parser.set_defaults(hole_thr = '100')
-parser.set_defaults(output_tab = 'structure_alignments.dat')
-parser.set_defaults(output_homep = 'HOMEP3.1.dat')
-parsed = parser.parse_args()
-
-#Add check if main_dir path exists
+import genfsys
+import genrlib
+import genclib
+import straln
+import clusterize
 
 
-filters = {'resolution' : float(parsed.resolution_filter[0]),
-           'NMR' : parsed.with_nmr,
-           'THM' : parsed.with_theoretical,
-           'hole_thr' : int(parsed.hole_thr[0])}
+print("GENERATE FILESYSTEM")
+# Parse the command line and generate filesystem.
+# The main directory of the filesystem is created in the installation
+# path and is named 'HOMEP_3.1_YYYY_MM_DD', where YYYY, MM and DD are
+# the year, month and day of creation.
+# Return three lists:
+#  options - contains all command line options
+#  filters - contains all activated filters (see genclib)
+#  locations - contains all addresses of the filesystem locations
+# Write two hidden files in the main folder of the fileystem:
+#  .options.dat - transcription of the options list
+#  .locations.dat - transcription of the locations list
+options, filters, locations = genfsys.filesystem_info()
 
-# execute
 
-locations = genfsys.filesystem_info(str(parsed.main_dir[0]))
+print("GENERATE RAW LIBRARY")
+# Parse the PDTBM library file, download pdb files from PDB, builds a
+# comprehensive nested structure containing all information from the PDBTM
+# library file.
+# PDB codes are stored in upper case (PDB-style).
+# Return a nested structure:
+#  pdbtm_data - contains all information parsed from the PDBTM library file
+#               It is a dictionary whose keys are the PDB 4-letter codes
+#               (capitalized). Each entry is a list of two elements, the first
+#               containing the dictionary of general information keywords (the
+#               ones contained in the opening tag) and the second containing
+#               the dictionary of specific information tags (the nested tags).
+#               The latter is build recursively in the same way (it is itself
+#               a two-element list). When a tag is non-unique (i.e., there can
+#               be more than one 'CHAIN' tag), the dictionary entry contains a
+#               list, with one element for each tag. Each element is again a
+#               two-element list...
+pdbtm_data, diff_pdbtm_data = genrlib.upate_raw_pdb_library(options,
+                                                            locations)
 
-pdbtm_data, diff_database_namelist = genrlib.update_raw_pdb_library(locations, str(parsed.pdbtm_file_path[0]))
-# PDB names must be in upper case
-# After downloading, check for existence and then compile a list and a no-list
-# In pdbtm_data output, there must be all info regarding the structures
+exit(1)
 
-if not pdbtm_data:
-	raise NameError("ERROR: pdbtm_data not produced")
+print("GENERATE CHAIN LIBRARY")
+# Thoroughly check the pdb files, divide them into chains, selects chains
+# according to the filters, compiles a smaller database containing only the
+# selected chains.
+# The selected chains are copied into the pdb chain folder and into the
+# proper superfamily folder (in its structure/ subfolder).
+# Return the nested structure:
+#  core_pdbtm_data - structured as pdbtm_data, but only containing the
+#                    selected chains. In addition to the information from the
+#                    PDBTM library file, each selected chain will have a new
+#                    'FROM_PDB' keyword holding a dictionary with the
+#                    information retrieved from the pdb file.
+# Write one hidden file in the main folder of the filesystem:
+#  .superfamily_classification.dat - contains the proper location for each pdb
+#                                    structure
+# Write two log files in the chain pdb folder:
+#  exclusions.txt - states the reasons why each excluded chain was ruled out
+#  info.txt - contains an unclassified summary of all selected chains,
+#             providing resolution, technique, rfactor, title and chain-wise
+#             specifics for each element
+core_pdbtm_data = genclib.generate_chain_pdb_files(filters,
+                                                   locations,
+                                                   pdbtm_data)
 
-if diff_database_namelist:
-	diff_database = {}
-	for struct in diff_database_namelist:
-		diff_database[struct] = pdbtm_data[struct]
 
-	diff_database = genclib.generate_chain_pdb_files(locations, diff_database, filters)
-	# Here, operate any possible checks. The resulting list must be the cleanest possible
-	# After checking, filter by resolution, then divide by number of TM domains, then create filesystem and add codes
-	# Eventually there must be two folders: one with all identified chains, another with the used chains
+print("CALCULATE STRUCTURE ALIGNMENTS")
+# Check the existent alignments, write the alignments to perform, runs the
+# specified alignment program in parallel over the specified number of
+# processors. Each job performs all due alignments with a specified structure
+# For example, if the alignments A-B, B-A, C-A, C-B have to be run, the 
+# jobs will be (A-B), (B-A), (C-A, C-B). When an alignment is complete, add
+# to the corresponding sequence andn structure alignment files the new data.
+# Files are organized in the alignments/ folder contained in each superfamily
+# directory. In the alignments/ folder there is the fasta/ subfolder that 
+# contains the sequence alignments, and the str_alns/ subfolder that contains
+# the structural alignments. The alignments are organized in files carrying
+# the name of the first structure in the alignment. For example, the sequence
+# alignments A-B and A-H will be contained in the file seq_A.dat, while the
+# structure alignment C-A will be contained in the file str_C.dat.
+# Return the nested structure:
+#  table - contains the sequence identity, TM-score and RMSD of each alignment
+#          present in the database (not just the ones recently performed).
+#          Its access method is: table[clade][superfamily][struct_1][struct_2]
+# Write the file in the main folder of the file system:
+#  <structure_alignments.dat> - the name of this file can be changed with the
+#                               flag --output_tab. Contains the information
+#                               placed in the nested structure 'table'
+table = straln.structure_alignment(options,
+                                   locations)
+# Take this part from start_FrTM.py and adapt
 
-	for struct in diff_database_namelist:
-		pdbtm_data[struct] = diff_database[struct]
 
-	np = int(parsed.number_of_procs[0])
-
-	table = straln.structure_alignment(locations, str(parsed.straln_path[0]), np, str(parsed.output_tab[0]))
-	# Take this part from start_FrTM.py and adapt
-else:
-	table = straln.make_new_table(locations, str(parsed.output_tab[0]))
-
-homep_library = clusterize.clusterize(locations, pdbtm_data, table, str(parsed.output_tab[0]), str(parsed.HOMEP_filename[0]), float(parsed.object_thr[0]), float(parsed.cluster_thr[0]))
-# Must report each used chain
-# Must output library table
+print("CLUSTERIZE RESULTS")
+# Starting from the data contained in the nested structure 'table' (or the
+# corresponding file) divide the structures in each superfamily into families
+# and groups.
+# Return the nested structure:
+#  homep_library - contains the complete HOMEP3.1 library containing all data
+#                  present in the filesystem. The structures are organized in
+#                  Clades (alpha, beta), Superfamilies (number of TM domains),
+#                  Families (proximity with TM-score metric), Objects (proximity
+#                  with sequence identity matrix).
+# Write the file in the main folder of the file system:
+#  <HOMEP3.1.dat> - the name of this file can be changed with the flag
+#                   --output_homep. Contains the full classification of all
+#                   structures contained in the database.
+homep_library = clusterize.clusterize(options, locations, core_pdbtm_data, table)

@@ -88,6 +88,9 @@ def PDB_parser(locations, struct):
 			else:
 				PDB_dict['TITLE'] += line[10:].rstrip()
 
+	if 'RFACTOR' not in PDB_dict:
+		PDB_dict['RFACTOR'] == 'NULL'
+
 	PDB_dict['CHAIN'] = {}
 	for chain in list(res_ids.keys()):
 		if b_factor[chain] == 0:
@@ -106,7 +109,7 @@ def PDB_parser(locations, struct):
 # Structure checker
 def checker(locations, database, filters):
 	instructions = {}
-	instructions_filename = locations['FSYS']['mainpath'] + '.superfamily_classification.txt'
+	instructions_filename = locations['FSYS']['mainpath'] + '.superfamily_classification.dat'
 	instructions_file = open(instructions_filename, 'w')
 	exclusions_filename = locations['FSYS']['mainpath'] + locations['FSYS']['cpdb'] + 'exclusions.txt'
 	exclusions_file = open(exclusions_filename, 'w')
@@ -199,7 +202,10 @@ def checker(locations, database, filters):
 
 			if not tab_string:
 				for key in [x for x in sorted(list(new_database[struct][1]['FROM_PDB'].keys())) if x != 'CHAIN']:
-					tab_string += "{0:16} ".format(key)
+					if key == 'TITLE':
+						tab_string += "{0:150} ".format(key)
+					else:
+						tab_string += "{0:16} ".format(key)
 				tab_string += "{0:5} ".format('CHAIN')
 				for key in [x for x in sorted(list(new_database[struct][1]['FROM_PDB']['CHAIN'][chain][0].keys())) if x != 'CHAINID']:
 					tab_string += "{0:16} ".format(key)
@@ -208,14 +214,18 @@ def checker(locations, database, filters):
 			tab_string = ""
 			for key in [x for  x in sorted(list(new_database[struct][1]['FROM_PDB'].keys())) if x != 'CHAIN']:
 				tab_string += "{0:16} ".format(new_database[struct][1]['FROM_PDB'][key])
+				if key == 'TITLE':
+					tab_string += "{0:150} ".format(new_database[struct][1]['FROM_PDB'][key][:150])
+				else:
+					tab_string += "{0:16} ".format(str(new_database[struct][1]['FROM_PDB'][key]))
 			counter = 0
 			strlen = len(tab_string)
 			for chain in sorted(list(new_database[struct][1]['FROM_PDB']['CHAIN'])):
 				if counter > 0:
 					tab_string = " "*strlen
-				tab_string += "{0:5} ".format(new_database[struct][1]['FROM_PDB']['CHAIN'][chain][0]['CHAINID'])
+				tab_string += "{0:5} ".format(str(new_database[struct][1]['FROM_PDB']['CHAIN'][chain][0]['CHAINID']))
 				for key in [x for x in sorted(list(new_database[struct][1]['FROM_PDB']['CHAIN'][chain][0].keys())) if x != 'CHAINID']:
-					tab_string += "{0:16} "
+					tab_string += "{0:16} ".format(str(new_database[struct][1]['FROM_PDB']['CHAIN'][chain][0][key]))
 				tab_file.write(tab_string[:-1] + "\n")
 				counter += 1
 			tab_string = "XXX"

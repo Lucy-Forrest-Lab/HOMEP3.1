@@ -1,13 +1,22 @@
 # Name: genrlib.py
 # Language: python3
-# Libraries:  
+# Libraries: re, urllib.request, gzip, shutil, os, copy, support 
 # Description: Generates HOMEP raw pdb library
 # Author: Edoardo Sarti
-# Date: Aug 10 2016
+# Date: Sep 05 2016
 
-import sys, re, urllib.request, gzip, shutil, os, collections, copy
+import re
+import urllib.request
+import gzip
+import shutil
+import os
+import copy
 from support import *
 
+
+# --- Support functions for XML parser ------------------------------------- #
+
+# Parse attributes in an opening or opening/closing tag
 def parse_attributes(line):
 	attr = {}
 	line = line.strip().replace('/>','').replace('>','')
@@ -20,6 +29,7 @@ def parse_attributes(line):
 		return None
 
 
+# Parse tag name in any type of tag
 def extract_tag(line, this_name):
 	# Extracts the first word in the first tag (opening or closing) found in the line
 	tag = re.findall(r'<(.*?)/*>',line,re.DOTALL)
@@ -30,6 +40,7 @@ def extract_tag(line, this_name):
 	return tag[0].split()[0]
 
 
+# Parse text outside tags
 def extract_text(line, this_name):
 	# Text between opening and closing tags
 	text = re.findall(r'>(.*\S.*)</',line,re.DOTALL)
@@ -45,7 +56,28 @@ def extract_text(line, this_name):
 		raise NameError(logmsg)
 	return text[0]
 
+# --- End support functions for XML parser ---------------------------------- #
 
+
+# XML parser
+# Parse the PDBTM library file.
+# Fill a nested dictionary structure composed in the following way:
+#  - The main keys of the dictionary are the (capitalized) 4-letter PDB codes
+#  - A tag is rendered as a list of two dictionaries. The former contains all keywords
+#    that appear in the opening tag, the latter contains everything is nested into the
+#    tag (including other tags, their keywords, their contents, and so on).
+#  - When the tag is allowed to repeat more than once it must appear in the open_list_tags
+#    hardcoded list. If a tag of this sort is encountered, the keyword of the dictionary
+#    corresponds to a list of two-element lists - not directly to the two-element list of 
+#    the tag.
+#  - The only two exceptions to this set of rules are the opening tag (i.e., the main
+#    keyword is not 'pdbtm', as it should, but are the 4-letter PDB codes) and the
+#    'CHAIN' tag, which does not hold a list of chains as it should, rather contains a
+#    dictionary whose keywords are the names of the chains. This makes future searches in
+#    the database easier.
+# Example: in order to know all the reported names of the chains of the structure 
+# corresponding to the PDB code 1AAA, one should query database['1AAA'][1]['CHAIN'].keys()
+# (Note that this structure is acquired only at the end of the process!)
 def parser(pdbtm_file_path, this_name):
 	# The resulting object is a dictionary where each 4-letter PDB name corresponds
 	# to all information contained in the database. Each PDB name corresponds to a
@@ -229,6 +261,7 @@ def mini_parser(pdbtm_file_path, this_name):
 	return DB
 
 
+# Download structures from the PDB website
 def download_structures(database_namelist, raw_pdb_dir):
 	for pdbname in database_namelist:
 		url = 'http://www.rcsb.org/pdb/files/'+pdbname+'.pdb.gz'
@@ -246,14 +279,12 @@ def download_structures(database_namelist, raw_pdb_dir):
 			missing_files_file.write(database_struct+"\n")
 	missing_files_file.close()
 
-#	print(len(downloaded_files), len(database_namelist))
 
+# --- Library functions ---------------------------------------------------- #
 
-# Library function
 def generate_raw_pdb_library(options, locations):
 	# Hardcoded variables
-	this_name = 'genrlib'
-	indent = " "*len(header(this_name))
+	this_name = 'generate_raw_pdb_library'
 	version = 3.1
 
 	pdbtm_file_path = options['pdbtm_file_path']
@@ -261,9 +292,8 @@ def generate_raw_pdb_library(options, locations):
 	# Checks
 	for path_name in [locations['FSYS']['mainpath']+locations['FSYS'][x] for x in list(locations['FSYS'].keys()) if x != 'installpath' and x != 'mainpath' and x!= 'main']:
 		if not os.path.exists(path_name):
-			logmsg = header(this_name) + "ERROR: The directory path {0} does not exist. Please generate the file system first.".format(path_name)
-			write_log(this_name, logmsg)	
-			raise NameError(logmsg)
+			raise_error(this_name, "ERROR: The directory path {0} does not exist. Please generate the file system first.".format(path_name))
+
 	# Parser
 	database = parser(pdbtm_file_path, this_name)
 	database_namelist = list(database.keys())
@@ -277,23 +307,29 @@ def generate_raw_pdb_library(options, locations):
 
 def update_raw_pdb_library(locations, pdbtm_file_path):
 	# Hardcoded variables
-	this_name = 'uprlib'
-	indent = " "*len(header(this_name))
+	this_name = 'update_raw_pdb_library'
 	version = 3.1
+	log = ""
 
 	# Checks
 	for path_name in [locations['FSYS']['mainpath']+locations['FSYS'][x] for x in list(locations['FSYS'].keys()) if x != 'installpath' and x != 'mainpath' and x!= 'main']:
 		if not os.path.exists(path_name):
-			logmsg = header(this_name) + "ERROR: The directory path {0} does not exist. Please generate the file system first.".format(path_name)
-			write_log(this_name, logmsg)	
-			raise NameError(logmsg)
+			raise_error(this_name, "ERROR: The directory path {0} does not exist. Please generate the file system first.".format(path_name))
+
 	# Parser
+	# Parse new database
 	database = parser(pdbtm_file_path, this_name)
 	database_namelist = list(database.keys())
 
+	# Parse old database and calculate the difference
 	old_pdbtm_file_path = locations['FSYS']['mainpath']+'pdbtm_database.dat'
 	old_database = parser(old_pdbtm_file_path, this_name)
 	old_database_namelist = list(old_database.keys())
+
+	# Overwrite the pdbtm_databse.dat file and save the old one as a hidden file
+	# (until another update won't overwrite on it as well)
+	shutil.copy(locations['FSYS']['mainpath']+'pdbtm_database.dat', locations['FSYS']['mainpath']+'.previous_pdbtm_database.dat')
+	shutil.copy(pdbtm_file_path, locations['FSYS']['mainpath']+'pdbtm_database.dat')
 
 	diff_database_namelist = []
 	for struct in database_namelist:
@@ -301,8 +337,7 @@ def update_raw_pdb_library(locations, pdbtm_file_path):
 			diff_database_namelist.append(struct)
 
 	if not diff_database_namelist:
-		logmsg = header(this_name) + "No updates to be done."
-		write_log(this_name, logmsg)
+		log += print_log(this_name, "No updates to be done.")
 		return database, []
 	
 	# Downloader

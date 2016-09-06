@@ -262,7 +262,7 @@ def structure_alignment(options, locations):
 				superfamilies.append((ss, i))
 
 	ex_check = {}
-	exelist_filename = locations['FSYS']['mainpath'] + '.scheduled_alignments'
+	exelist_filename = locations['FSYS']['mainpath'] + '.scheduled_alignments.dat'
 	if os.path.exists(exelist_filename):
 		exelist_file = open(exelist_filename, 'r')
 		text = exelist_file.read().split('\n')
