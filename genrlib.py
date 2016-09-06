@@ -305,7 +305,9 @@ def generate_raw_pdb_library(options, locations):
 
 	return database
 
-def update_raw_pdb_library(locations, pdbtm_file_path):
+def update_raw_pdb_library(options, locations):
+	pdbtm_file_path = options['pdbtm_file_path']
+
 	# Hardcoded variables
 	this_name = 'update_raw_pdb_library'
 	version = 3.1
@@ -328,8 +330,7 @@ def update_raw_pdb_library(locations, pdbtm_file_path):
 
 	# Overwrite the pdbtm_databse.dat file and save the old one as a hidden file
 	# (until another update won't overwrite on it as well)
-	shutil.copy(locations['FSYS']['mainpath']+'pdbtm_database.dat', locations['FSYS']['mainpath']+'.previous_pdbtm_database.dat')
-	shutil.copy(pdbtm_file_path, locations['FSYS']['mainpath']+'pdbtm_database.dat')
+	archive_old_file(locations, locations['FSYS']['mainpath']+'pdbtm_database.dat')
 
 	diff_database_namelist = []
 	for struct in database_namelist:

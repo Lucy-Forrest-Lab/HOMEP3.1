@@ -1,2 +1,2 @@
 python3 generate_library.py -d test/ -pdbtm pdbtmall_minimal -s /Users/Orfeo/GITs/EDO/frtmalign/frtmalign -np 1 -ot 0.85 -ct 0.6 -rf 3.5
-python3 update_library.py -d test_update/ -pdbtm pdbtmall_minimalplus -s /Users/Orfeo/GITs/EDO/frtmalign/frtmalign -np 1 -ot 0.85 -ct 0.6 -rf 3.5
+python3 update_library.py -m test_update/HOMEP_3.1_2016_09_04/ -pdbtm pdbtmall_minimalplus -np 8

@@ -25,7 +25,7 @@ print("GENERATE FILESYSTEM")
 #  .options.dat - transcription of the options list
 #  .locations.dat - transcription of the locations list
 options, filters, locations = genfsys.filesystem_info()
-
+print(locations)
 
 print("GENERATE RAW LIBRARY")
 # Parse the PDTBM library file, download pdb files from PDB, builds a
@@ -44,8 +44,8 @@ print("GENERATE RAW LIBRARY")
 #               be more than one 'CHAIN' tag), the dictionary entry contains a
 #               list, with one element for each tag. Each element is again a
 #               two-element list...
-pdbtm_data, diff_pdbtm_data = genrlib.upate_raw_pdb_library(options,
-                                                            locations)
+pdbtm_data, diff_pdbtm_data = genrlib.update_raw_pdb_library(options,
+                                                             locations)
 
 exit(1)
 

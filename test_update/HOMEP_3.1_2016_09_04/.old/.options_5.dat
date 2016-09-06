@@ -1,0 +1,13 @@
+install_dir		
+output_homep		HOMEP3.1.dat
+object_thr		None
+output_tab		structure_alignments.dat
+with_nmr		False
+resolution_filter		None
+number_of_procs		8
+straln_path		None
+hole_thr		100
+pdbtm_file_path		pdbtmall_minimalplus
+with_theoretical		False
+main_dir		test_update/HOMEP_3.1_2016_09_04/
+cluster_thr		None

@@ -112,9 +112,22 @@ def checker(locations, database, filters):
 	instructions_filename = locations['FSYS']['mainpath'] + '.superfamily_classification.dat'
 	instructions_file = open(instructions_filename, 'w')
 	exclusions_filename = locations['FSYS']['mainpath'] + locations['FSYS']['cpdb'] + 'exclusions.txt'
-	exclusions_file = open(exclusions_filename, 'w')
+	if os.path.exists(exclusions_filename):
+		already_excluded = {}
+		exclusions_file = open(exclusions_filename, 'r')
+		text = exclusions_file.read().split('\n')
+		for line in text:
+			if line and line[:6]:
+				already_excluded[line[:6]]
+		exclusions_file.close()
+		exclusions_file = open(exclusions_filename, 'a')
+	else:
+		exclusions_file = open(exclusions_filename, 'w')
 	tab_filename = locations['FSYS']['mainpath'] + locations['FSYS']['cpdb'] + 'info.txt'
-	tab_file = open(tab_filename, 'w')
+	if os.path.exists(tab_filename):
+		tab_file = open(tab_filename, 'a')
+	else:
+		tab_file = open(tab_filename, 'w')
 	tab_string = ""
 	new_database = {}
 	for struct in list(database.keys()):
@@ -166,21 +179,23 @@ def checker(locations, database, filters):
 
 			# Was there something wrong?
 			if not exclude_chain:
-				s_type = database[struct][1]['CHAIN'][chain][0]['TYPE']
-				if struct not in instructions:
-					instructions[struct] = {}
-				instructions[struct][chain] = (s_type, n_pdbtm)
-				instructions_file.write("{0}\t{1}\t{2}\n".format(s_type, n_pdbtm, struct+'_'+chain))
 				chain_filename = locations['FSYS']['mainpath'] + locations['FSYS']['cpdb'] + struct + '_' + chain + '.pdb'
-				chain_file = open(chain_filename, 'w')
-				struct_filename = locations['FSYS']['mainpath'] + locations['FSYS']['rpdb'] + struct + '.pdb'
-				struct_file = open(struct_filename, 'r')
-				text = struct_file.read().split('\n')
-				struct_file.close()
-				for line in text:
-					if line[0:4] == 'ATOM' and line[21] == chain:
-						chain_file.write(line + '\n')
-				chain_file.close()
+				if os.path.exists(chain_filename):
+					s_type = database[struct][1]['CHAIN'][chain][0]['TYPE']
+					if struct not in instructions:
+						instructions[struct] = {}
+					instructions[struct][chain] = (s_type, n_pdbtm)
+					instructions_file.write("{0}\t{1}\t{2}\n".format(s_type, n_pdbtm, struct+'_'+chain))
+					chain_filename = locations['FSYS']['mainpath'] + locations['FSYS']['cpdb'] + struct + '_' + chain + '.pdb'
+					chain_file = open(chain_filename, 'w')
+					struct_filename = locations['FSYS']['mainpath'] + locations['FSYS']['rpdb'] + struct + '.pdb'
+					struct_file = open(struct_filename, 'r')
+					text = struct_file.read().split('\n')
+					struct_file.close()
+					for line in text:
+						if line[0:4] == 'ATOM' and line[21] == chain:
+							chain_file.write(line + '\n')
+					chain_file.close()
 				if struct not in new_database:
 					new_database[struct] = []
 					new_database[struct].append(database[struct][0])
@@ -239,6 +254,11 @@ def checker(locations, database, filters):
 
 def structure_sorter(locations, instructions):
 	ssd = {'alpha' : 'a', 'beta' : 'b'}
+
+##### SONO QUI ###
+	for ss in 'alpha', 'beta':
+		for i in os.listdir(locations['FSYS']['mainpath'] + ss + '/'):
+			shutil.rmtree(locations['FSYS']['mainpath'] + ss + '/' + i + '/structures/')
 	for struct in instructions:
 		for chain in instructions[struct]:
 			ss = instructions[struct][chain][0]

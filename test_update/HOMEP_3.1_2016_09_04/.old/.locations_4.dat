@@ -1,7 +1,7 @@
-FSYS		beta		beta/
+FSYS		rpdb		raw_pdbs/
 FSYS		cpdb		pdbs/
 FSYS		mainpath		test_update//HOMEP_3.1_2016_09_04/
 FSYS		main		HOMEP_3.1_2016_09_04/
 FSYS		installpath		test_update//
+FSYS		beta		beta/
 FSYS		alpha		alpha/
-FSYS		rpdb		raw_pdbs/
