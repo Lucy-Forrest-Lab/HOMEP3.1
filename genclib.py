@@ -89,7 +89,7 @@ def PDB_parser(locations, struct):
 				PDB_dict['TITLE'] += line[10:].rstrip()
 
 	if 'RFACTOR' not in PDB_dict:
-		PDB_dict['RFACTOR'] == 'NULL'
+		PDB_dict['RFACTOR'] = 'NULL'
 
 	PDB_dict['CHAIN'] = {}
 	for chain in list(res_ids.keys()):
@@ -113,17 +113,17 @@ def checker(locations, database, filters):
 	instructions_file = open(instructions_filename, 'w')
 	exclusions_filename = locations['FSYS']['mainpath'] + locations['FSYS']['cpdb'] + 'exclusions.txt'
 	if os.path.exists(exclusions_filename):
-		already_excluded = {}
+		already_excluded = []
 		exclusions_file = open(exclusions_filename, 'r')
 		text = exclusions_file.read().split('\n')
 		for line in text:
 			if line and line[:6]:
-				already_excluded[line[:6]]
+				already_excluded.append(line[:6])
 		exclusions_file.close()
 		exclusions_file = open(exclusions_filename, 'a')
 	else:
 		exclusions_file = open(exclusions_filename, 'w')
-	tab_filename = locations['FSYS']['mainpath'] + locations['FSYS']['cpdb'] + 'info.txt'
+	tab_filename = locations['FSYS']['mainpath'] + locations['FSYS']['cpdb'] + 'current_database.txt'
 	if os.path.exists(tab_filename):
 		tab_file = open(tab_filename, 'a')
 	else:
@@ -158,9 +158,9 @@ def checker(locations, database, filters):
 				exclude_chain.append('Theoretical model')
 
 			# Holes greater than hole threshold check
-			if filters['hole_thr'] > 0:
+			if int(filters['hole_thr']) > 0:
 				for n in range(1,len(PDB_dict['CHAIN'][chain][1]['RESIDS'])):
-					if PDB_dict['CHAIN'][chain][1]['RESIDS'][n] - PDB_dict['CHAIN'][chain][1]['RESIDS'][n-1] > filters['hole_thr']:
+					if PDB_dict['CHAIN'][chain][1]['RESIDS'][n] - PDB_dict['CHAIN'][chain][1]['RESIDS'][n-1] > int(filters['hole_thr']):
 						exclude_chain.append('Contains hole longer than {0} residues'.format(filters['hole_thr']))
 						break
 
@@ -172,7 +172,7 @@ def checker(locations, database, filters):
 
 			# Resolution check
 			if 'resolution' in filters and PDB_dict['TECHNIQUE'] != 'THEORETICAL' and PDB_dict['TECHNIQUE'] != 'NMR':
-				if PDB_dict['RESOLUTION'] > filters['resolution']:
+				if PDB_dict['RESOLUTION'] > float(filters['resolution']):
 					exclude_chain.append('Resolution is higher than {0}'.format(filters['resolution']))
 				elif PDB_dict['RESOLUTION'] == 0:
 					exclude_chain.append('No resolution information found'.format(filters['resolution']))
@@ -207,9 +207,10 @@ def checker(locations, database, filters):
 					
 			else:
 #				print(exclude_chain)
-				exclusions_file.write(struct + '_' + chain + '\t\t' + exclude_chain[0] + '\n')
-				for nl in range(1, len(exclude_chain)):
-					exclusions_file.write(' '*len(struct) + ' ' + ' '*len(chain) + '\t\t' + exclude_chain[nl] + '\n')
+				if struct + '_' + chain not in already_excluded:
+					exclusions_file.write(struct + '_' + chain + '\t\t' + exclude_chain[0] + '\n')
+					for nl in range(1, len(exclude_chain)):
+						exclusions_file.write(' '*len(struct) + ' ' + ' '*len(chain) + '\t\t' + exclude_chain[nl] + '\n')
 
 		# Introduce PDB_dict as a key of the database
 		if struct in new_database:
@@ -255,10 +256,10 @@ def checker(locations, database, filters):
 def structure_sorter(locations, instructions):
 	ssd = {'alpha' : 'a', 'beta' : 'b'}
 
-##### SONO QUI ###
 	for ss in 'alpha', 'beta':
 		for i in os.listdir(locations['FSYS']['mainpath'] + ss + '/'):
-			shutil.rmtree(locations['FSYS']['mainpath'] + ss + '/' + i + '/structures/')
+			if os.path.exists(locations['FSYS']['mainpath'] + ss + '/' + i + '/structures/'):
+				shutil.rmtree(locations['FSYS']['mainpath'] + ss + '/' + i + '/structures/')
 	for struct in instructions:
 		for chain in instructions[struct]:
 			ss = instructions[struct][chain][0]
@@ -266,6 +267,7 @@ def structure_sorter(locations, instructions):
 			destination_dir = locations['FSYS']['mainpath'] + ss + '/' + str(ntm) + '/'
 			if not os.path.exists(destination_dir):
 				os.mkdir(destination_dir)
+			if not os.path.exists(destination_dir + 'structures/'):
 				os.mkdir(destination_dir + 'structures/')
 			shutil.copy(locations['FSYS']['mainpath'] + locations['FSYS']['cpdb'] + struct + '_' + chain + '.pdb', destination_dir + 'structures/')
 

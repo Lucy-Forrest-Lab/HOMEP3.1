@@ -47,8 +47,6 @@ print("GENERATE RAW LIBRARY")
 pdbtm_data, diff_pdbtm_data = genrlib.update_raw_pdb_library(options,
                                                              locations)
 
-exit(1)
-
 print("GENERATE CHAIN LIBRARY")
 # Thoroughly check the pdb files, divide them into chains, selects chains
 # according to the filters, compiles a smaller database containing only the
@@ -72,6 +70,8 @@ print("GENERATE CHAIN LIBRARY")
 core_pdbtm_data = genclib.generate_chain_pdb_files(filters,
                                                    locations,
                                                    pdbtm_data)
+
+exit(1)
 
 
 print("CALCULATE STRUCTURE ALIGNMENTS")

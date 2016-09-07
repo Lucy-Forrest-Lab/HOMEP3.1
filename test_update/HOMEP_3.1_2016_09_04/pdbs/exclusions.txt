@@ -443,3 +443,121 @@
 3AG1_E		Chain does not cross the membrane
 3AG1_T		Contains hole longer than 1 residues
 3AG1_U		Chain does not cross the membrane
+4AQ5_A		Resolution is higher than 3.5
+4AQ5_B		Resolution is higher than 3.5
+4AQ5_C		Contains hole longer than 100 residues
+      		Resolution is higher than 3.5
+4AQ5_E		Resolution is higher than 3.5
+4AQ5_D		Resolution is higher than 3.5
+4AQ9_A		Resolution is higher than 3.5
+4AQ9_B		Resolution is higher than 3.5
+4AQ9_C		Contains hole longer than 100 residues
+      		Resolution is higher than 3.5
+4AQ9_E		Resolution is higher than 3.5
+4AQ9_D		Resolution is higher than 3.5
+4APS_B		Not contained in PDB_TM biological form
+5ARA_C		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARA_F		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARA_E		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARA_K		Resolution is higher than 3.5
+5ARA_P		Resolution is higher than 3.5
+5ARA_W		Resolution is higher than 3.5
+5ARA_G		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARA_M		Resolution is higher than 3.5
+5ARA_D		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARA_I		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARA_S		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARA_J		Resolution is higher than 3.5
+5ARA_Q		Resolution is higher than 3.5
+5ARA_B		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARA_U		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARA_T		Resolution is higher than 3.5
+5ARA_O		Resolution is higher than 3.5
+5ARA_L		Resolution is higher than 3.5
+5ARA_N		Resolution is higher than 3.5
+5ARA_A		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARA_V		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARA_H		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARH_C		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARH_F		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARH_E		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARH_K		Resolution is higher than 3.5
+5ARH_P		Resolution is higher than 3.5
+5ARH_W		Resolution is higher than 3.5
+5ARH_G		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARH_M		Resolution is higher than 3.5
+5ARH_D		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARH_I		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARH_S		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARH_J		Resolution is higher than 3.5
+5ARH_Q		Resolution is higher than 3.5
+5ARH_B		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARH_U		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARH_T		Resolution is higher than 3.5
+5ARH_O		Resolution is higher than 3.5
+5ARH_L		Resolution is higher than 3.5
+5ARH_N		Resolution is higher than 3.5
+5ARH_A		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARH_V		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARH_H		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+3AQP_B		Not contained in PDB_TM biological form
+1AR1_C		Chain does not cross the membrane
+1AR1_D		Chain does not cross the membrane
+5ARE_C		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARE_F		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARE_E		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARE_K		Resolution is higher than 3.5
+5ARE_P		Resolution is higher than 3.5
+5ARE_W		Resolution is higher than 3.5
+5ARE_G		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARE_M		Resolution is higher than 3.5
+5ARE_D		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARE_I		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARE_S		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARE_J		Resolution is higher than 3.5
+5ARE_Q		Resolution is higher than 3.5
+5ARE_B		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARE_U		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARE_T		Resolution is higher than 3.5
+5ARE_O		Resolution is higher than 3.5
+5ARE_L		Resolution is higher than 3.5
+5ARE_N		Resolution is higher than 3.5
+5ARE_A		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARE_V		Chain does not cross the membrane
+      		Resolution is higher than 3.5
+5ARE_H		Chain does not cross the membrane
+      		Resolution is higher than 3.5
