@@ -2,6 +2,10 @@ FSYS		mainpath		test_update//HOMEP_3.1_2016_09_04/
 FSYS		installpath		test_update//
 FSYS		cpdb		pdbs/
 FSYS		rpdb		raw_pdbs/
-FSYS		alpha		alpha/
-FSYS		beta		beta/
+FSYS		tree		main_tree/
+FSYS		alpha		main_tree/alpha/
+FSYS		beta		main_tree/beta/
 FSYS		main		HOMEP_3.1_2016_09_04/
+FSYS		repository	repository/
+FSYS		rchains		repository/chains/
+FSYS		extensions	data_extensions/

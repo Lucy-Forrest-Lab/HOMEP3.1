@@ -7,29 +7,58 @@
 
 import os, sys, multiprocessing, subprocess, re, time
 
+def repo_inspector(repo_filename):
+	repo_file = open(repo_filename, 'r')
+	text = repo_file.read().split('\n')
+	repo_file.close()
+	repo_info = []
+	for line in text:
+		fields = line.split()
+		if line and fields[0] == 'BEGIN':
+			record = True
+			recorded_text = ""
+		if not record and not line:
+			continue
+		if record:
+			recorded_text = line + '\n'
+		if fields[0] == 'CHAIN_1:':
+			chain_1 = fields[1]
+		if fields[0] == 'CHAIN_2:':
+			chain_2 = fields[1]
+		if fields[0] == 'END':
+			if chain_1 not in repo_info:
+				repo_info[chain_1] = {}
+			if chain_2 in repo_info[chain_1]:
+				print("WARNING: multiple occurrences of couple {0} {1} in file {2}".format(chain_1, chain_2, repo_filename))
+			repo_info[chain_1][chain_2] = recorded_text
+			record = False
+	return repo_info
+
+
 def FrTMjob(data):
 	locations, target, exelist = data
-
-	print(target)
+	clade, superfamily, chain_1, straln_path = target
 	
-	superfamily_path = locations['FSYS']['mainpath'] + target[0] + '/' + target[1] + '/'
-	sequence_path = superfamily_path + 'alignments/fasta/seq_' + target[2] + '.dat'
-	structure_path = superfamily_path + 'alignments/str_alns/str__' + target[2] + '.dat'
+	superfamily_path = locations['FSYS']['mainpath'] + clade + '/' + superfamily + '/'
+	sequence_path = superfamily_path + 'alignments/fasta/seq_' + chain_1 + '.dat'
+	structure_path = superfamily_path + 'alignments/str_alns/str__' + chain_1 + '.dat'
+	seq_repo_path = locations['FSYS']['mainpath'] + locations['FSYS']['rchains'] + 'fasta/'
+	str_repo_path = locations['FSYS']['mainpath'] + locations['FSYS']['rchains'] + 'str_alns/'
 
 	# Checks for needed locations:
 	# Superfamily path
 	if not os.path.exists(superfamily_path):
-		raise NameError("ERROR: Superfamily {0} not found in path {1}".format(target[0]+' '+target[1]), superfamily_path)
+		raise NameError("ERROR: Superfamily {0} not found in path {1}".format(clade+' '+superfamily, superfamily_path)
 	# structure/ folder
 	if not os.path.exists(superfamily_path + 'structures/'):
 		raise NameError("ERROR: structures/ folder not found in path {0}".format(superfamily_path))
 	# Main pdb file
-	if not os.path.exists(superfamily_path + 'structures/' + target[2] + '.pdb'):
-		raise NameError("ERROR: File {0} not found in {1}".format(target[2] + '.pdb', superfamily_path + 'structures/'))
+	if not os.path.exists(superfamily_path + 'structures/' + chain_1 + '.pdb'):
+		raise NameError("ERROR: File {0} not found in {1}".format(chain_1 + '.pdb', superfamily_path + 'structures/'))
 	# Secondary pdb files
-	for chain in exelist:
-		if not os.path.exists(superfamily_path + 'structures/' + chain + '.pdb'):
-			raise NameError("ERROR: File {0} not found in {1}".format(chain + '.pdb', superfamily_path + 'structures/'))
+	for chain_2 in exelist:
+		if not os.path.exists(superfamily_path + 'structures/' + chain_2 + '.pdb'):
+			raise NameError("ERROR: File {0} not found in {1}".format(chain_2 + '.pdb', superfamily_path + 'structures/'))
 	
 	# Creates, if needed, the alignment locations
 	if not os.path.exists(superfamily_path + 'alignments/'):
@@ -38,6 +67,12 @@ def FrTMjob(data):
 		os.mkdir(superfamily_path + 'alignments/fasta/')
 	if not os.path.exists(superfamily_path + 'alignments/str_alns/'):
 		os.mkdir(superfamily_path + 'alignments/str_alns/')
+
+	# Creates, if needed, the repository locations
+	if not os.path.exists(seq_repo_path):
+		os.mkdir(seq_repo_path)
+	if not os.path.exists(str_repo_path):
+		os.mkdir(str_repo_path)
 
 	# Checks if the main sequence file already exists. If it does, checks again if none of the alignments in exelist
 	# is contained in the file. Cancels from exelist any found alignment.
@@ -64,30 +99,34 @@ def FrTMjob(data):
 		structure_file.close()
 	
 	# Creates the temporary folder for sequence alignments
-	aln_tmpfolder_path = superfamily_path + 'alignments/fasta/tmp_' + target[2] + '/'
+	aln_tmpfolder_path = superfamily_path + 'alignments/fasta/tmp_' + chain_1 + '/'
 	if not os.path.exists(aln_tmpfolder_path):
 		os.mkdir(aln_tmpfolder_path)
 
 	# Creates the temporary folder for structure alignments
-	straln_tmpfolder_path = superfamily_path + 'alignments/str_alns/tmp_' + target[2] + '/'
+	straln_tmpfolder_path = superfamily_path + 'alignments/str_alns/tmp_' + chain_1 + '/'
 	if not os.path.exists(straln_tmpfolder_path):
 		os.mkdir(straln_tmpfolder_path)
 
-	pdb1_filename = superfamily_path + 'structures/' + target[2] + '.pdb'
-	for chain in exelist:
+	pdb1_filename = superfamily_path + 'structures/' + chain_1 + '.pdb'
+	for chain_2 in exelist:
 		# Defines filenames
-		pdb2_filename = superfamily_path + 'structures/' + chain + '.pdb'
-		seq_output_filename = aln_tmpfolder_path + 'aln_' + target[2] + '_' + chain + '.tmp'
-		str_output_filename = 'straln_' + target[2] + '_' + chain + '.tmp' # This filename is without path for a constraint on flags length of frtmalign (see below)
-		stdout_filename = aln_tmpfolder_path + 'output_' + target[2] + '_' + chain + '.tmp'
+		pdb2_filename = superfamily_path + 'structures/' + chain_2 + '.pdb'
+		seq_output_filename = aln_tmpfolder_path + 'aln_' + chain_1 + '_' + chain_2 + '.tmp'
+		str_output_filename = 'straln_' + chain_1 + '_' + chain_2 + '.tmp' # This filename is without path for a constraint on flags length of frtmalign (see below)
+		stdout_filename = aln_tmpfolder_path + 'output_' + chain_1 + '_' + chain_2 + '.tmp'
+
+		# If sequence and structure temporary files are present, jump
+		if os.path.exists(seq_output_filename) and os.path.exists(str_output_filename):
+			continue
 
 		# Fr-TM-align call
 		# The Fr-TM-align command cannot exceed a certain length. Thus, we are compelled to run it locally into structures/
 		# The stdout file from Fr-TM-align can go directly to the right temporary folder (but needs to be cleaned)
 		stdout_file = open(stdout_filename, 'w')
 		fnull = open(os.devnull, 'w')
-		print(target[3], pdb1_filename[-10:], pdb2_filename[-10:], '-o', str_output_filename)
-		p = subprocess.Popen([target[3], pdb1_filename[-10:], pdb2_filename[-10:], '-o', str_output_filename], stdout=stdout_file, stderr=fnull, cwd=superfamily_path+'structures/')
+		print(straln_path, pdb1_filename[-10:], pdb2_filename[-10:], '-o', str_output_filename)
+		p = subprocess.Popen([straln_path, pdb1_filename[-10:], pdb2_filename[-10:], '-o', str_output_filename], stdout=stdout_file, stderr=fnull, cwd=superfamily_path+'structures/')
 		p.wait()
 		fnull.close()
 		stdout_file.close()
@@ -118,14 +157,14 @@ def FrTMjob(data):
 		
 		# Creates a sequence temporary file already correctly formatted
 		seq_output_file = open(seq_output_filename, 'w')
-		seq_output_file.write(">" + chain + "\n" + seq_1.replace('\x00', '') + "\n>" + target[2] + "\n" + seq_2.replace('\x00', '') + "\n\nRMSD\t{0:.2f}\nTM-score\t{1:.5f}\n\n".format(RMSD, TMscore))
+		seq_output_file.write(">" + chain_1 + "\n" + seq_1.replace('\x00', '') + "\n>" + chain_2 + "\n" + seq_2.replace('\x00', '') + "\n\nRMSD\t{0:.2f}\nTM-score\t{1:.5f}\n\n".format(RMSD, TMscore))
 		seq_output_file.close()
 
 	# Writes on the main sequence file. Each alignment begins with a "BEGIN" line, followed by two lines reporting the two chain names
-	# (format: CHAIN_X: chain_name, where X={1,2}), and ends with and "END" line.
+	# (format: "CHAIN_X: chain_name", where X={1,2}), and ends with an "END" line.
 	sequence_file = open(sequence_path, 'a')
 	for tmp_filename in sorted(os.listdir(aln_tmpfolder_path)):
-		sequence_file.write("BEGIN \nCHAIN_1: " + target[2]  + "\nCHAIN_2: " + tmp_filename[-10:-4] + "\n")
+		sequence_file.write("BEGIN \nCHAIN_1: " + chain_1  + "\nCHAIN_2: " + tmp_filename[-10:-4] + "\n")
 		tmp_file = open(aln_tmpfolder_path + tmp_filename)
 		text = tmp_file.read().split('\n')
 		tmp_file.close()
@@ -137,11 +176,13 @@ def FrTMjob(data):
 	os.rmdir(aln_tmpfolder_path)
 	sequence_file.close()
 
+#	repo_inspector()
+
 	# Writes on the main structure file. Each alignment begins with a "BEGIN" line, followed by two lines reporting the two chain names
-	# (format: CHAIN_X: chain_name, where X={1,2}), and ends with and "END" line.
+	# (format: "CHAIN_X: chain_name", where X={1,2}), and ends with an "END" line.
 	structure_file = open(structure_path, 'a')
 	for tmp_filename in sorted(os.listdir(straln_tmpfolder_path)):
-		structure_file.write("BEGIN \nCHAIN_1: " + target[2]  + "\nCHAIN_2: " + tmp_filename[-10:-4] + "\n")
+		structure_file.write("BEGIN \nCHAIN_1: " + chain_1  + "\nCHAIN_2: " + tmp_filename[-10:-4] + "\n")
 		tmp_file = open(straln_tmpfolder_path + tmp_filename)
 		text = tmp_file.read().split('\n')
 		tmp_file.close()

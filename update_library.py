@@ -98,7 +98,6 @@ print("CALCULATE STRUCTURE ALIGNMENTS")
 #                               placed in the nested structure 'table'
 table = straln.structure_alignment(options,
                                    locations)
-# Take this part from start_FrTM.py and adapt
 
 
 print("CLUSTERIZE RESULTS")

@@ -202,9 +202,15 @@ def generate_filesystem():
 	main_path = install_path + main_dir
 	rpdb_dir = 'raw_pdbs/'
 	cpdb_dir = 'pdbs/'
+	tree_dir = 'main_tree/'
 	lib_dir = {}
-	lib_dir['alpha'] = 'alpha/'
-	lib_dir['beta'] = 'beta/'
+	lib_dir['alpha'] = tree_dir + 'alpha/'
+	lib_dir['beta'] = tree_dir + 'beta/'
+	repo_dir = 'repository/'
+	rchains_dir = repo_dir + 'chains/'
+	extensions_dir = 'data_extensions/'
+	
+	
 
 	# Run checks over names and addresses
 	if not os.path.exists(install_path):
@@ -227,12 +233,24 @@ def generate_filesystem():
 	os.mkdir(main_path + cpdb_dir)
 	log += print_log(this_name, "Directory to store curated pdbs created: {0}\n".format(main_path + cpdb_dir))
 
+	os.mkdir(main_path + repo_dir)
+	log += print_log(this_name, "Directory to store repository created: {0}\n".format(main_path + repo_dir))
+
+	os.mkdir(main_path + rchains_dir)
+	log += print_log(this_name, "Directory to store chaind info in repository created: {0}\n".format(main_path + rchains_dir))
+
 	os.mkdir(main_path + '.old/')
 	log += print_log(this_name, "Hidden directory to store previous system files: {0}\n".format(main_path + '.old/'))
+
+	os.mkdir(main_path + tree_dir)
+	log += print_log(this_name, "Main directory of the structure database created: {0}\n".format(main_path + tree_dir))
 
 	for ss in 'alpha', 'beta':
 		os.mkdir(main_path + lib_dir[ss])
 		log += print_log(this_name, "Directory to store " + ss + " superfamilies created: {0}\n".format(main_path + lib_dir[ss]))
+
+	os.mkdir(main_path + extensions_dir)
+	log += print_log(this_name, "Directory to store all data extensions created: {0}\n".format(main_path + extensions_dir))
 
 	write_log(this_name, log)
 
@@ -245,8 +263,13 @@ def generate_filesystem():
 	locations['FSYS']['main'] = main_dir
 	locations['FSYS']['rpdb'] = rpdb_dir
 	locations['FSYS']['cpdb'] = cpdb_dir
+	locations['FSYS']['tree'] = main_tree_dir
 	locations['FSYS']['alpha'] = lib_dir['alpha']
 	locations['FSYS']['beta'] = lib_dir['beta']
+	locations['FSYS']['repository'] = repo_dir
+	locations['FSYS']['rchains'] = rchains_dir
+	locations['FSYS']['extensions'] = extensions_dir
+
 
 	# Write the three hidden files	
 	write_hidden_files(options, filters, locations)
