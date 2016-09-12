@@ -10,6 +10,7 @@ import sys
 import os
 import datetime
 import argparse
+import collections
 from support import *
 
 
@@ -121,8 +122,8 @@ def write_hidden_files(options, filters, locations):
 	# It contains the same information contained in the 'locations' dictionary.
 	locations_filename = locations['FSYS']['mainpath'] + '.locations.dat'
 	locations_file = open(locations_filename, 'w')
-	for x in list(locations['FSYS'].keys()):
-		locations_file.write("{0}\t\t{1}\t\t{2}\n".format('FSYS', x, locations['FSYS'][x]))
+	for key, value in list(locations['FSYS'].items()):
+		locations_file.write("{0}\t\t{1}\t\t{2}\n".format('FSYS', key, value))
 	locations_file.close()
 
 	return
@@ -195,22 +196,9 @@ def generate_filesystem():
 
 	# Run command line parser
 	options, filters = main_parser(this_name)
-
-	# Define folder names
 	install_path = options['install_dir'] + '/'
 	main_dir = 'HOMEP_' + str(version) + '_' + datetime.datetime.now().strftime("%Y_%m_%d") + '/'
 	main_path = install_path + main_dir
-	rpdb_dir = 'raw_pdbs/'
-	cpdb_dir = 'pdbs/'
-	tree_dir = 'main_tree/'
-	lib_dir = {}
-	lib_dir['alpha'] = tree_dir + 'alpha/'
-	lib_dir['beta'] = tree_dir + 'beta/'
-	repo_dir = 'repository/'
-	rchains_dir = repo_dir + 'chains/'
-	extensions_dir = 'data_extensions/'
-	
-	
 
 	# Run checks over names and addresses
 	if not os.path.exists(install_path):
@@ -222,53 +210,55 @@ def generate_filesystem():
 			raise_error(this_name, "ERROR: In the installation directory path {0} there are other versions of HOMEP.\n".format(install_path) +
 			              indent + "       If you want to continue, you have to set the internal variable other_versions_allowed as True.")
 
-	# Generate filesystem
-	log = ""
-	os.mkdir(main_path)
-	log += print_log(this_name, "Main directory created: {0}\n".format(main_path))
-
-	os.mkdir(main_path + rpdb_dir)
-	log += print_log(this_name, "Directory to store raw pdbs created: {0}\n".format(main_path + rpdb_dir))
-
-	os.mkdir(main_path + cpdb_dir)
-	log += print_log(this_name, "Directory to store curated pdbs created: {0}\n".format(main_path + cpdb_dir))
-
-	os.mkdir(main_path + repo_dir)
-	log += print_log(this_name, "Directory to store repository created: {0}\n".format(main_path + repo_dir))
-
-	os.mkdir(main_path + rchains_dir)
-	log += print_log(this_name, "Directory to store chaind info in repository created: {0}\n".format(main_path + rchains_dir))
-
-	os.mkdir(main_path + '.old/')
-	log += print_log(this_name, "Hidden directory to store previous system files: {0}\n".format(main_path + '.old/'))
-
-	os.mkdir(main_path + tree_dir)
-	log += print_log(this_name, "Main directory of the structure database created: {0}\n".format(main_path + tree_dir))
-
-	for ss in 'alpha', 'beta':
-		os.mkdir(main_path + lib_dir[ss])
-		log += print_log(this_name, "Directory to store " + ss + " superfamilies created: {0}\n".format(main_path + lib_dir[ss]))
-
-	os.mkdir(main_path + extensions_dir)
-	log += print_log(this_name, "Directory to store all data extensions created: {0}\n".format(main_path + extensions_dir))
-
-	write_log(this_name, log)
-
 	# Create 'locations' nested dictionary.
 	# Under the keyword 'FSYS' should go all paths and names relative to the file system;
 	# Under the keyword 'OPT' should go all other locations and paths it's convenient to save.
-	locations = {'FSYS' : {}, 'OPT' : {}}
+	locations = {'FSYS' : collections.OrderedDict(), 'SYSFILES': collections.OrderedDict(), 'OPT' : collections.OrderedDict()}
 	locations['FSYS']['installpath'] = install_path
-	locations['FSYS']['mainpath'] = main_path
-	locations['FSYS']['main'] = main_dir
-	locations['FSYS']['rpdb'] = rpdb_dir
-	locations['FSYS']['cpdb'] = cpdb_dir
-	locations['FSYS']['tree'] = main_tree_dir
-	locations['FSYS']['alpha'] = lib_dir['alpha']
-	locations['FSYS']['beta'] = lib_dir['beta']
-	locations['FSYS']['repository'] = repo_dir
-	locations['FSYS']['rchains'] = rchains_dir
-	locations['FSYS']['extensions'] = extensions_dir
+	locations['FSYS']['main'] = 'HOMEP_' + str(version) + '_' + datetime.datetime.now().strftime("%Y_%m_%d") + '/'
+	locations['FSYS']['mainpath'] = install_path + locations['FSYS']['main']
+	locations['FSYS']['database'] = 'database/'                                      # database/
+	locations['FSYS']['layers'] = locations['FSYS']['database'] + 'layers/'          # database/layers/
+	locations['FSYS']['tree'] = locations['FSYS']['layers'] + 'tree/'                # database/layers/tree/
+	locations['FSYS']['alpha'] = locations['FSYS']['tree'] + 'alpha/'                # database/layers/tree/alpha/
+	locations['FSYS']['beta'] = locations['FSYS']['tree'] + 'beta/'                  # database/layers/tree/beta/
+	locations['FSYS']['symmetries'] = locations['FSYS']['layers'] + 'symmetries/'    # database/layers/symmetries/
+	locations['FSYS']['sequences'] = locations['FSYS']['layers'] + 'sequences/'      # database/layers/sequences/
+	locations['FSYS']['selection'] = locations['FSYS']['database'] + 'selection/'    # database/selection/
+	locations['FSYS']['wholepdbs'] = locations['FSYS']['selection'] + 'whole_pdbs/'  # database/selection/whole_pdbs/
+	locations['FSYS']['chainpdbs'] = locations['FSYS']['selection'] + 'chain_pdbs/'  # database/selection/chain_pdbs/
+	locations['FSYS']['old'] = locations['FSYS']['selection'] + '.old/'              # database/selection/.old/
+	locations['FSYS']['repository'] = 'repository/'                                  # repository/
+	locations['FSYS']['repochains'] = locations['FSYS']['repository'] + 'chains/'    # repository/chains/
+	locations['FSYS']['PDB'] = 'PDB/'                                                # PDB/
+	locations['FSYS']['PDBpdbs'] = locations['FSYS']['PDB'] + 'pdbs/'                # PDB/pdbs/
+	locations['FSYS']['PDBfasta'] = locations['FSYS']['PDB'] + 'fasta/'              # PDB/fasta/
+	locations['FSYS']['PDBTM'] = 'PDBTM/'                                            # PDBTM/
+	locations['FSYS']['TREE'] = collections.OrderedDict()
+	locations['FSYS']['TREE']['str'] = 'structures/'
+	locations['FSYS']['TREE']['aln'] = 'alignments/'
+	locations['FSYS']['TREE']['seqaln'] = locations['FSYS']['TREE']['aln'] + 'fasta/'
+	locations['FSYS']['TREE']['straln'] = locations['FSYS']['TREE']['aln'] + 'str_alns/'
+	locations['SYSFILES']['H_options'] = locations['FSYS']['mainpath'] + '.options.dat'
+	locations['SYSFILES']['H_filters'] = locations['FSYS']['mainpath'] + '.filters.dat'
+	locations['SYSFILES']['H_locations'] = locations['FSYS']['mainpath'] + '.locations.dat'
+	locations['SYSFILES']['H_topologytype'] = locations['FSYS']['mainpath'] + '.topology_classification.dat'
+	locations['SYSFILES']['PDBTMarchive'] = locations['FSYS']['mainpath'] + locations['FSYS']['PDBTM'] + 'PDBTM_archive.dat'
+	locations['SYSFILES']['excludedchains'] = locations['FSYS']['mainpath'] + locations['FSYS']['chainpdbs'] + 'exclusions.txt'
+	locations['SYSFILES']['chaindata'] = locations['FSYS']['mainpath'] + locations['FSYS']['chainpdbs'] + 'chain_database.txt'
+	
+
+	# Generate filesystem
+	log = ""
+	os.mkdir(locations['FSYS']['mainpath'])
+	log += print_log(this_name, "Main directory created: {0}\n".format(locations['FSYS']['mainpath']))
+
+	c = 0
+	for index, duple in enumerate(locations['FSYS'].items()):
+		if index > 2:
+			os.mkdir(locations['FSYS']['mainpath'] + duple[1])
+			log += print_log(this_name, "Directory {0} has been created.".format(duple[0]))
+	write_log(this_name, log)
 
 
 	# Write the three hidden files	

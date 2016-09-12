@@ -50,7 +50,7 @@ def archive_old_file(locations, filenames):
 		extension = os.path.splitext(filename)[1]
 		one_hundred_files = False
 		for i in range (0,100):
-			new_filename = locations['FSYS']['mainpath'] + '.old/' + filename_noext + '_' + str(i) + extension
+			new_filename = locations['FSYS']['old'] + filename_noext + '_' + str(i) + extension
 			if not os.path.exists(new_filename):
 				shutil.move(filename, new_filename)
 				break
@@ -58,8 +58,8 @@ def archive_old_file(locations, filenames):
 				one_hundred_files = True
 		if one_hundred_files:
 			for i in range(1, 100):
-				old_filename = locations['FSYS']['mainpath'] + '.old/' + filename_noext + '_' + str(i) + extension
-				new_filename = locations['FSYS']['mainpath'] + '.old/' + filename_noext + '_' + str(i-1) + extension
+				old_filename = locations['FSYS']['old'] + filename_noext + '_' + str(i) + extension
+				new_filename = locations['FSYS']['old'] + filename_noext + '_' + str(i-1) + extension
 				shutil.move(old_filename, new_filename)
-			new_filename = locations['FSYS']['mainpath'] + '.old/' + filename_noext + '_' + str(99) + extension
+			new_filename = locations['FSYS']['old'] + filename_noext + '_' + str(99) + extension
 			shutil.move(filename, new_filename)

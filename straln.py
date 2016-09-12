@@ -37,36 +37,33 @@ def repo_inspector(repo_filename):
 
 def FrTMjob(data):
 	locations, target, exelist = data
-	clade, superfamily, chain_1, straln_path = target
+	clade, topology, chain_1, straln_path = target
 	
-	superfamily_path = locations['FSYS']['mainpath'] + clade + '/' + superfamily + '/'
-	sequence_path = superfamily_path + 'alignments/fasta/seq_' + chain_1 + '.dat'
-	structure_path = superfamily_path + 'alignments/str_alns/str__' + chain_1 + '.dat'
-	seq_repo_path = locations['FSYS']['mainpath'] + locations['FSYS']['rchains'] + 'fasta/'
-	str_repo_path = locations['FSYS']['mainpath'] + locations['FSYS']['rchains'] + 'str_alns/'
+	topology_path = locations['FSYS']['mainpath'] + clade + '/' + topology + '/'
+	sequence_path = topology_path + locations['FSYS']['TREE']['seqaln'] + 'seq_' + chain_1 + '.dat'
+	structure_path = topology_path + locations['FSYS']['TREE']['straln'] + 'str_' + chain_1 + '.dat'
+	seq_repo_path = locations['FSYS']['mainpath'] + locations['FSYS']['repochains'] + locations['FSYS']['TREE']['seqaln'] 
+	str_repo_path = locations['FSYS']['mainpath'] + locations['FSYS']['repochains'] + locations['FSYS']['TREE']['straln']
 
 	# Checks for needed locations:
 	# Superfamily path
-	if not os.path.exists(superfamily_path):
-		raise NameError("ERROR: Superfamily {0} not found in path {1}".format(clade+' '+superfamily, superfamily_path)
+	if not os.path.exists(topology_path):
+		raise NameError("ERROR: Superfamily {0} not found in path {1}".format(clade+' '+topology, topology_path)
 	# structure/ folder
-	if not os.path.exists(superfamily_path + 'structures/'):
-		raise NameError("ERROR: structures/ folder not found in path {0}".format(superfamily_path))
+	if not os.path.exists(topology_path + locations['FSYS']['TREE']['str']):
+		raise NameError("ERROR: {0} folder not found in path {1}".format(locations['FSYS']['TREE']['str'], topology_path))
 	# Main pdb file
-	if not os.path.exists(superfamily_path + 'structures/' + chain_1 + '.pdb'):
-		raise NameError("ERROR: File {0} not found in {1}".format(chain_1 + '.pdb', superfamily_path + 'structures/'))
+	if not os.path.exists(topology_path + locations['FSYS']['TREE']['str'] + chain_1 + '.pdb'):
+		raise NameError("ERROR: File {0} not found in {1}".format(chain_1 + '.pdb', topology_path + locations['FSYS']['TREE']['str']))
 	# Secondary pdb files
 	for chain_2 in exelist:
-		if not os.path.exists(superfamily_path + 'structures/' + chain_2 + '.pdb'):
-			raise NameError("ERROR: File {0} not found in {1}".format(chain_2 + '.pdb', superfamily_path + 'structures/'))
+		if not os.path.exists(topology_path + locations['FSYS']['TREE']['str'] + chain_2 + '.pdb'):
+			raise NameError("ERROR: File {0} not found in {1}".format(chain_2 + '.pdb', topology_path + locations['FSYS']['TREE']['str']))
 	
 	# Creates, if needed, the alignment locations
-	if not os.path.exists(superfamily_path + 'alignments/'):
-		os.mkdir(superfamily_path + 'alignments/')
-	if not os.path.exists(superfamily_path + 'alignments/fasta/'):
-		os.mkdir(superfamily_path + 'alignments/fasta/')
-	if not os.path.exists(superfamily_path + 'alignments/str_alns/'):
-		os.mkdir(superfamily_path + 'alignments/str_alns/')
+	for n, x in enumerate(locations['FSYS']['TREE'].items()):
+		if n > 0 and not os.path.exists(topology_path + x[1]):
+			os.mkdir(topology_path + x[1])
 
 	# Creates, if needed, the repository locations
 	if not os.path.exists(seq_repo_path):
@@ -99,19 +96,19 @@ def FrTMjob(data):
 		structure_file.close()
 	
 	# Creates the temporary folder for sequence alignments
-	aln_tmpfolder_path = superfamily_path + 'alignments/fasta/tmp_' + chain_1 + '/'
+	aln_tmpfolder_path = topology_path + 'alignments/fasta/tmp_' + chain_1 + '/'
 	if not os.path.exists(aln_tmpfolder_path):
 		os.mkdir(aln_tmpfolder_path)
 
 	# Creates the temporary folder for structure alignments
-	straln_tmpfolder_path = superfamily_path + 'alignments/str_alns/tmp_' + chain_1 + '/'
+	straln_tmpfolder_path = topology_path + 'alignments/str_alns/tmp_' + chain_1 + '/'
 	if not os.path.exists(straln_tmpfolder_path):
 		os.mkdir(straln_tmpfolder_path)
 
-	pdb1_filename = superfamily_path + 'structures/' + chain_1 + '.pdb'
+	pdb1_filename = topology_path + 'structures/' + chain_1 + '.pdb'
 	for chain_2 in exelist:
 		# Defines filenames
-		pdb2_filename = superfamily_path + 'structures/' + chain_2 + '.pdb'
+		pdb2_filename = topology_path + 'structures/' + chain_2 + '.pdb'
 		seq_output_filename = aln_tmpfolder_path + 'aln_' + chain_1 + '_' + chain_2 + '.tmp'
 		str_output_filename = 'straln_' + chain_1 + '_' + chain_2 + '.tmp' # This filename is without path for a constraint on flags length of frtmalign (see below)
 		stdout_filename = aln_tmpfolder_path + 'output_' + chain_1 + '_' + chain_2 + '.tmp'
@@ -126,13 +123,13 @@ def FrTMjob(data):
 		stdout_file = open(stdout_filename, 'w')
 		fnull = open(os.devnull, 'w')
 		print(straln_path, pdb1_filename[-10:], pdb2_filename[-10:], '-o', str_output_filename)
-		p = subprocess.Popen([straln_path, pdb1_filename[-10:], pdb2_filename[-10:], '-o', str_output_filename], stdout=stdout_file, stderr=fnull, cwd=superfamily_path+'structures/')
+		p = subprocess.Popen([straln_path, pdb1_filename[-10:], pdb2_filename[-10:], '-o', str_output_filename], stdout=stdout_file, stderr=fnull, cwd=topology_path+'structures/')
 		p.wait()
 		fnull.close()
 		stdout_file.close()
 
 		# Moves the Fr-TM-align output file into the structure temporary folder
-		os.rename(superfamily_path + 'structures/' + str_output_filename, straln_tmpfolder_path + str_output_filename)
+		os.rename(topology_path + 'structures/' + str_output_filename, straln_tmpfolder_path + str_output_filename)
 
 		# Reads and then removes the stdout file from Fr-TM-align
 		stdout_file = open(stdout_filename, 'r')
@@ -212,27 +209,27 @@ def calculate_seqid(alignment):
 def make_new_table(locations, external_filename):
 	names = {'alpha' : 'a', 'beta' : 'b'}
 
-	superfamilies = []
+	topologies = []
 	for ss in 'alpha', 'beta':
 		for i in os.listdir(locations['FSYS']['mainpath'] + ss + '/'):
 			if re.match('^\d*$', str(i)):
-				superfamilies.append((ss, i))
+				topologies.append((ss, i))
 
 	table_filename = locations['FSYS']['mainpath'] + external_filename
 	table_file = open(table_filename, 'w')
 	table = {}
-	for sf in sorted(superfamilies, key = lambda x: (x[0], int(x[1]))):
+	for sf in sorted(topologies, key = lambda x: (x[0], int(x[1]))):
 		if not sf[0] in table:
 			table[sf[0]] = {}
 		table[sf[0]][sf[1]] = {}
-		superfamily_seqaln_path = locations['FSYS']['mainpath'] + sf[0] + '/' + sf[1] + '/alignments/fasta/'
-		if os.path.exists(superfamily_seqaln_path): 
-			files_in_seqaln_path = os.listdir(superfamily_seqaln_path)
+		topology_seqaln_path = locations['FSYS']['mainpath'] + sf[0] + '/' + sf[1] + '/alignments/fasta/'
+		if os.path.exists(topology_seqaln_path): 
+			files_in_seqaln_path = os.listdir(topology_seqaln_path)
 		else:
 			files_in_seqaln_path = []
 		for seqaln_filename in files_in_seqaln_path:
 			if seqaln_filename[0:4] == 'seq_' and seqaln_filename[-4:] == '.dat':
-				seqaln_file = open(superfamily_seqaln_path + seqaln_filename, 'r')
+				seqaln_file = open(topology_seqaln_path + seqaln_filename, 'r')
 				text = seqaln_file.read().split('\n')
 				seqaln_file.close()
 				for nline in range(len(text)):
@@ -258,10 +255,10 @@ def make_new_table(locations, external_filename):
 						if not (chain_1 and chain_2 and seq_1 and seq_2):
 							raise NameError("ERROR: file is corrupted")
 						seqid = calculate_seqid((seq_1, seq_2))
-						table_file.write("{0}\t{1}\t{2}\t{3}\t{4:10.8f}\t{5:10.8f}\t{6:10.6f}\t\t{7}\n".format(names[sf[0]], str(int(sf[1])).zfill(3), chain_1, chain_2, seqid, tmscore, RMSD, superfamily_seqaln_path+seqaln_filename))
+						table_file.write("{0}\t{1}\t{2}\t{3}\t{4:10.8f}\t{5:10.8f}\t{6:10.6f}\t\t{7}\n".format(names[sf[0]], str(int(sf[1])).zfill(3), chain_1, chain_2, seqid, tmscore, RMSD, topology_seqaln_path+seqaln_filename))
 						if chain_1 not in table[sf[0]][sf[1]]:
 							table[sf[0]][sf[1]][chain_1] = {}
-						table[sf[0]][sf[1]][chain_1][chain_2] = (seqid, tmscore, RMSD, superfamily_seqaln_path+seqaln_filename)
+						table[sf[0]][sf[1]][chain_1][chain_2] = (seqid, tmscore, RMSD, topology_seqaln_path+seqaln_filename)
 	table_file.close()
 	return table
 							
@@ -296,11 +293,11 @@ def structure_alignment(options, locations):
 		external_filename = 'new_' + external_filename
 		repository_file.close()
 	
-	superfamilies = []
+	topologies = []
 	for ss in 'alpha', 'beta':
 		for i in os.listdir(locations['FSYS']['mainpath'] + ss + '/'):
 			if re.match('^\d*$', str(i)):
-				superfamilies.append((ss, i))
+				topologies.append((ss, i))
 
 	ex_check = {}
 	exelist_filename = locations['FSYS']['mainpath'] + '.scheduled_alignments.dat'
@@ -318,7 +315,7 @@ def structure_alignment(options, locations):
 
 	exelist = {}
 	exelist_file = open(exelist_filename, 'a')
-	for sf in superfamilies:
+	for sf in topologies:
 		structs = [x[-10:-4] for x in os.listdir(locations['FSYS']['mainpath'] + sf[0] + '/' + sf[1] + '/structures/') if x[-4:] == '.pdb']
 #		print(structs)
 		if len(structs) > 1:
@@ -356,7 +353,7 @@ def structure_alignment(options, locations):
 
 
 def check_runs():
-	instructions_filename = locations['FSYS']['mainpath'] + '.superfamily_classification.txt'
+	instructions_filename = locations['FSYS']['mainpath'] + '.topology_classification.txt'
 	instructions_file = open(instructions_filename, 'r')
 	text = instructions_file.read().split('\n')
 	instructions_file.close()

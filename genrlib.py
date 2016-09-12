@@ -290,18 +290,18 @@ def generate_raw_pdb_library(options, locations):
 	pdbtm_file_path = options['pdbtm_file_path']
 
 	# Checks
-	for path_name in [locations['FSYS']['mainpath']+locations['FSYS'][x] for x in list(locations['FSYS'].keys()) if x != 'installpath' and x != 'mainpath' and x!= 'main']:
+	for path_name in [locations['FSYS']['mainpath']+x[1] for n, x in enumerate(locations['FSYS'].items()) if n > 2]:
 		if not os.path.exists(path_name):
 			raise_error(this_name, "ERROR: The directory path {0} does not exist. Please generate the file system first.".format(path_name))
 
 	# Parser
 	database = parser(pdbtm_file_path, this_name)
 	database_namelist = list(database.keys())
-	shutil.copy(pdbtm_file_path, locations['FSYS']['mainpath']+'pdbtm_database.dat')
+	shutil.copy(pdbtm_file_path, locations['SYSFILES']['PDBTMarchive'])
 	
 
 	# Downloader
-	download_structures(database_namelist, locations['FSYS']['mainpath'] + locations['FSYS']['rpdb'])
+	download_structures(database_namelist, locations['FSYS']['mainpath'] + locations['FSYS']['wholepdbs'])
 
 	return database
 
@@ -314,7 +314,7 @@ def update_raw_pdb_library(options, locations):
 	log = ""
 
 	# Checks
-	for path_name in [locations['FSYS']['mainpath']+locations['FSYS'][x] for x in list(locations['FSYS'].keys()) if x != 'installpath' and x != 'mainpath' and x!= 'main']:
+	for path_name in [locations['FSYS']['mainpath']+x[1] for n, x in enumerate(locations['FSYS'].items()) if n > 2]:
 		if not os.path.exists(path_name):
 			raise_error(this_name, "ERROR: The directory path {0} does not exist. Please generate the file system first.".format(path_name))
 
@@ -324,14 +324,14 @@ def update_raw_pdb_library(options, locations):
 	database_namelist = list(database.keys())
 
 	# Parse old database and calculate the difference
-	old_pdbtm_file_path = locations['FSYS']['mainpath']+'pdbtm_database.dat'
+	old_pdbtm_file_path = locations['SYSFILES']['PDBTMarchive']
 	old_database = parser(old_pdbtm_file_path, this_name)
 	old_database_namelist = list(old_database.keys())
 
 	# Overwrite the pdbtm_databse.dat file and save the old one as a hidden file
 	# (until another update won't overwrite on it as well)
-	archive_old_file(locations, locations['FSYS']['mainpath']+'pdbtm_database.dat')
-	shutil.copy(pdbtm_file_path, locations['FSYS']['mainpath']+'pdbtm_database.dat')
+	archive_old_file(locations, locations['SYSFILES']['PDBTMarchive'])
+	shutil.copy(pdbtm_file_path, locations['SYSFILES']['PDBTMarchive'])
 
 	diff_database_namelist = []
 	for struct in database_namelist:
@@ -343,6 +343,6 @@ def update_raw_pdb_library(options, locations):
 		return database, []
 	
 	# Downloader
-	download_structures(diff_database_namelist, locations['FSYS']['mainpath'] + locations['FSYS']['rpdb'])
+	download_structures(diff_database_namelist, locations['FSYS']['mainpath'] + locations['FSYS']['wholepdbs'])
 
 	return database, diff_database_namelist

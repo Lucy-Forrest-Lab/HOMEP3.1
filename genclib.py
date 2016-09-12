@@ -37,7 +37,7 @@ def from3to1(resname):
 
 # PDB parser
 def PDB_parser(locations, struct):
-	struct_filename = locations['FSYS']['mainpath'] + locations['FSYS']['rpdb'] + struct + '.pdb'
+	struct_filename = locations['FSYS']['mainpath'] + locations['FSYS']['wholepdbs'] + struct + '.pdb'
 	struct_file = open(struct_filename, 'r')
 	text = struct_file.read().split("\n")
 	struct_file.close()
@@ -109,9 +109,9 @@ def PDB_parser(locations, struct):
 # Structure checker
 def checker(locations, database, filters):
 	instructions = {}
-	instructions_filename = locations['FSYS']['mainpath'] + '.superfamily_classification.dat'
+	instructions_filename = locations['SYSFILES']['H_topologytype']
 	instructions_file = open(instructions_filename, 'w')
-	exclusions_filename = locations['FSYS']['mainpath'] + locations['FSYS']['cpdb'] + 'exclusions.txt'
+	exclusions_filename = locations['SYSFILES']['excludedchains'] 
 	if os.path.exists(exclusions_filename):
 		already_excluded = []
 		exclusions_file = open(exclusions_filename, 'r')
@@ -123,7 +123,7 @@ def checker(locations, database, filters):
 		exclusions_file = open(exclusions_filename, 'a')
 	else:
 		exclusions_file = open(exclusions_filename, 'w')
-	tab_filename = locations['FSYS']['mainpath'] + locations['FSYS']['cpdb'] + 'current_database.txt'
+	tab_filename = locations['SYSFILES']['chaindata']
 	if os.path.exists(tab_filename):
 		tab_file = open(tab_filename, 'a')
 	else:
@@ -179,16 +179,16 @@ def checker(locations, database, filters):
 
 			# Was there something wrong?
 			if not exclude_chain:
-				chain_filename = locations['FSYS']['mainpath'] + locations['FSYS']['cpdb'] + struct + '_' + chain + '.pdb'
+				chain_filename = locations['FSYS']['mainpath'] + locations['FSYS']['chainpdbs'] + struct + '_' + chain + '.pdb'
 				if os.path.exists(chain_filename):
 					s_type = database[struct][1]['CHAIN'][chain][0]['TYPE']
 					if struct not in instructions:
 						instructions[struct] = {}
 					instructions[struct][chain] = (s_type, n_pdbtm)
 					instructions_file.write("{0}\t{1}\t{2}\n".format(s_type, n_pdbtm, struct+'_'+chain))
-					chain_filename = locations['FSYS']['mainpath'] + locations['FSYS']['cpdb'] + struct + '_' + chain + '.pdb'
+					chain_filename = locations['FSYS']['mainpath'] + locations['FSYS']['chainpdbs'] + struct + '_' + chain + '.pdb'
 					chain_file = open(chain_filename, 'w')
-					struct_filename = locations['FSYS']['mainpath'] + locations['FSYS']['rpdb'] + struct + '.pdb'
+					struct_filename = locations['FSYS']['mainpath'] + locations['FSYS']['wholepdbs'] + struct + '.pdb'
 					struct_file = open(struct_filename, 'r')
 					text = struct_file.read().split('\n')
 					struct_file.close()
@@ -257,19 +257,20 @@ def structure_sorter(locations, instructions):
 	ssd = {'alpha' : 'a', 'beta' : 'b'}
 
 	for ss in 'alpha', 'beta':
-		for i in os.listdir(locations['FSYS']['mainpath'] + ss + '/'):
-			if os.path.exists(locations['FSYS']['mainpath'] + ss + '/' + i + '/structures/'):
-				shutil.rmtree(locations['FSYS']['mainpath'] + ss + '/' + i + '/structures/')
+		for i in os.listdir(locations['FSYS'][ss]):
+			if os.path.exists(locations['FSYS'][ss] + i + '/' + locations['FSYS']['TREE']['str']):
+				shutil.rmtree(locations['FSYS'][ss] + i + '/' + locations['FSYS']['TREE']['str'])
 	for struct in instructions:
 		for chain in instructions[struct]:
 			ss = instructions[struct][chain][0]
 			ntm = instructions[struct][chain][1]
-			destination_dir = locations['FSYS']['mainpath'] + ss + '/' + str(ntm) + '/'
+			destination_dir = locations['FSYS'][ss] + str(ntm) + '/'
 			if not os.path.exists(destination_dir):
 				os.mkdir(destination_dir)
-			if not os.path.exists(destination_dir + 'structures/'):
-				os.mkdir(destination_dir + 'structures/')
-			shutil.copy(locations['FSYS']['mainpath'] + locations['FSYS']['cpdb'] + struct + '_' + chain + '.pdb', destination_dir + 'structures/')
+			if not os.path.exists(destination_dir + locations['FSYS']['TREE']['str']):
+				os.mkdir(destination_dir + locations['FSYS']['TREE']['str'])
+			pdb_filename = struct + '_' + chain + '.pdb'
+			shutil.copy(locations['FSYS']['mainpath'] + locations['FSYS']['chainpdbs'] + pdb_filename, destination_dir + locations['FSYS']['TREE']['str'])
 
 
 # Library function
@@ -280,7 +281,7 @@ def generate_chain_pdb_files(filters, locations, database):
 	version = 3.1
 
 	# Checks
-	for path_name in [locations['FSYS']['mainpath'] + locations['FSYS'][x] for x in list(locations['FSYS'].keys()) if x != 'installpath' and x != 'mainpath' and x!= 'main']:
+	for path_name in [locations['FSYS']['mainpath'] + x[1] for n, x in enumerate(locations['FSYS'].items()) if n > 2]:
 		if not os.path.exists(path_name):
 			logmsg = header(this_name) + "ERROR: The directory path {0} does not exist. Please generate the file system first.".format(path_name)
 			write_log(this_name, logmsg)	
