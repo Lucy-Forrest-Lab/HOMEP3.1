@@ -210,53 +210,71 @@ def generate_filesystem():
 			raise_error(this_name, "ERROR: In the installation directory path {0} there are other versions of HOMEP.\n".format(install_path) +
 			              indent + "       If you want to continue, you have to set the internal variable other_versions_allowed as True.")
 
-	# Create 'locations' nested dictionary.
-	# Under the keyword 'FSYS' should go all paths and names relative to the file system;
+	# Create 'locations' nested dictionary of ordered dictionaries.
+	# Under the keyword 'FSYS' should go all names relative to the file system;
+	# Under the keyword 'FSYSPATH' should go all paths relative to the file system (they are one more than the FSYS entries, since there is also the install path;
+	# Under the keyword 'TREE' should go all denominations of the recurrent sequence/structure/alignment tree
+	# Under the keyword 'SYSFILES' should go all system files (hidden system files have keys starting with "H_")
 	# Under the keyword 'OPT' should go all other locations and paths it's convenient to save.
-	locations = {'FSYS' : collections.OrderedDict(), 'SYSFILES': collections.OrderedDict(), 'OPT' : collections.OrderedDict()}
-	locations['FSYS']['installpath'] = install_path
+	locations = {'TREE' : collections.OrderedDict(), 'FSYS' : collections.OrderedDict(), 'FSYSPATH' : collections.OrderedDict(), 'SYSFILES': collections.OrderedDict(), 'OPT' : collections.OrderedDict()}
+	# TREE
+	locations['TREE']['str'] = 'structures/'
+	locations['TREE']['seq'] = 'sequences/'
+	locations['TREE']['aln'] = 'alignments/'
+	locations['TREE']['seqaln'] = locations['FSYS']['TREE']['aln'] + 'seq_alns/'
+	locations['TREE']['straln'] = locations['FSYS']['TREE']['aln'] + 'str_alns/'
+	# FSYS
 	locations['FSYS']['main'] = 'HOMEP_' + str(version) + '_' + datetime.datetime.now().strftime("%Y_%m_%d") + '/'
-	locations['FSYS']['mainpath'] = install_path + locations['FSYS']['main']
-	locations['FSYS']['database'] = 'database/'                                      # database/
-	locations['FSYS']['layers'] = locations['FSYS']['database'] + 'layers/'          # database/layers/
-	locations['FSYS']['tree'] = locations['FSYS']['layers'] + 'tree/'                # database/layers/tree/
-	locations['FSYS']['alpha'] = locations['FSYS']['tree'] + 'alpha/'                # database/layers/tree/alpha/
-	locations['FSYS']['beta'] = locations['FSYS']['tree'] + 'beta/'                  # database/layers/tree/beta/
-	locations['FSYS']['symmetries'] = locations['FSYS']['layers'] + 'symmetries/'    # database/layers/symmetries/
-	locations['FSYS']['sequences'] = locations['FSYS']['layers'] + 'sequences/'      # database/layers/sequences/
-	locations['FSYS']['selection'] = locations['FSYS']['database'] + 'selection/'    # database/selection/
-	locations['FSYS']['wholepdbs'] = locations['FSYS']['selection'] + 'whole_pdbs/'  # database/selection/whole_pdbs/
-	locations['FSYS']['chainpdbs'] = locations['FSYS']['selection'] + 'chain_pdbs/'  # database/selection/chain_pdbs/
-	locations['FSYS']['old'] = locations['FSYS']['selection'] + '.old/'              # database/selection/.old/
-	locations['FSYS']['repository'] = 'repository/'                                  # repository/
-	locations['FSYS']['repochains'] = locations['FSYS']['repository'] + 'chains/'    # repository/chains/
-	locations['FSYS']['PDB'] = 'PDB/'                                                # PDB/
-	locations['FSYS']['PDBpdbs'] = locations['FSYS']['PDB'] + 'pdbs/'                # PDB/pdbs/
-	locations['FSYS']['PDBfasta'] = locations['FSYS']['PDB'] + 'fasta/'              # PDB/fasta/
-	locations['FSYS']['PDBTM'] = 'PDBTM/'                                            # PDBTM/
-	locations['FSYS']['TREE'] = collections.OrderedDict()
-	locations['FSYS']['TREE']['str'] = 'structures/'
-	locations['FSYS']['TREE']['aln'] = 'alignments/'
-	locations['FSYS']['TREE']['seqaln'] = locations['FSYS']['TREE']['aln'] + 'fasta/'
-	locations['FSYS']['TREE']['straln'] = locations['FSYS']['TREE']['aln'] + 'str_alns/'
-	locations['SYSFILES']['H_options'] = locations['FSYS']['mainpath'] + '.options.dat'
-	locations['SYSFILES']['H_filters'] = locations['FSYS']['mainpath'] + '.filters.dat'
-	locations['SYSFILES']['H_locations'] = locations['FSYS']['mainpath'] + '.locations.dat'
-	locations['SYSFILES']['H_topologytype'] = locations['FSYS']['mainpath'] + '.topology_classification.dat'
-	locations['SYSFILES']['PDBTMarchive'] = locations['FSYS']['mainpath'] + locations['FSYS']['PDBTM'] + 'PDBTM_archive.dat'
-	locations['SYSFILES']['excludedchains'] = locations['FSYS']['mainpath'] + locations['FSYS']['chainpdbs'] + 'exclusions.txt'
-	locations['SYSFILES']['chaindata'] = locations['FSYS']['mainpath'] + locations['FSYS']['chainpdbs'] + 'chain_database.txt'
-	
+	locations['FSYS']['database'] = 'database/'                                                         # database/
+	locations['FSYS']['layers'] = locations['FSYS']['database'] + 'layers/'                             # database/layers/
+	locations['FSYS']['tree'] = locations['FSYS']['layers'] + 'tree/'                                   # database/layers/tree/
+	locations['FSYS']['alpha'] = locations['FSYS']['tree'] + 'alpha/'                                   # database/layers/tree/alpha/
+	locations['FSYS']['beta'] = locations['FSYS']['tree'] + 'beta/'                                     # database/layers/tree/beta/
+	locations['FSYS']['symmetries'] = locations['FSYS']['layers'] + 'symmetries/'                       # database/layers/symmetries/
+	locations['FSYS']['sequences'] = locations['FSYS']['layers'] + 'sequences/'                         # database/layers/sequences/
+	locations['FSYS']['selection'] = locations['FSYS']['database'] + 'selection/'                       # database/selection/
+	locations['FSYS']['whole'] = locations['FSYS']['selection'] + 'whole_structs/'                      # database/selection/whole_structs/
+	locations['FSYS']['chains'] = locations['FSYS']['selection'] + 'chains/'                            # database/selection/chains/
+	locations['FSYS']['old'] = locations['FSYS']['selection'] + '.old/'                                 # database/selection/.old/
+	locations['FSYS']['repository'] = 'repository/'                                                     # repository/
+	locations['FSYS']['repowhole'] = locations['FSYS']['repository'] + 'whole_structs/'                 # repository/whole_structs/
+	locations['FSYS']['repochains'] = locations['FSYS']['repository'] + 'chains/'                       # repository/chains/
+	locations['FSYS']['repocseqaln'] = locations['FSYS']['repochains'] + locations['TREE']['seqaln']    # repository/chains/seq_alns
+	locations['FSYS']['repocstraln'] = locations['FSYS']['repochains'] + locations['TREE']['straln']    # repository/chains/str_alns
+	locations['FSYS']['PDB'] = 'PDB/'                                                                   # PDB/
+	locations['FSYS']['PDBpdbs'] = locations['FSYS']['PDB'] + 'pdbs/'                                   # PDB/pdbs/
+	locations['FSYS']['PDBfasta'] = locations['FSYS']['PDB'] + 'fasta/'                                 # PDB/fasta/
+	locations['FSYS']['PDBTM'] = 'PDBTM/'                                                               # PDBTM/
+	# FSYSPATH
+	locations['FSYSPATH']['install'] = install_path
+	for name, val in locations['FSYS'].items():
+		if name == 'main':
+			locations['FSYSPATH'][name] = locations['FSYSPATH']['install'] + val
+		else:
+			locations['FSYSPATH'][name] = locations['FSYSPATH']['install'] + locations['FSYS']['main'] + val
+	# SYSFILES
+	locations['SYSFILES']['H_options'] = locations['FSYSPATH']['main'] + '.options.dat'
+	locations['SYSFILES']['H_filters'] = locations['FSYSPATH']['main'] + '.filters.dat'
+	locations['SYSFILES']['H_locations'] = locations['FSYSPATH']['main'] + '.locations.dat'
+	locations['SYSFILES']['H_topologytype'] = locations['FSYSPATH']['database'] + '.topology_classification.dat'
+	locations['SYSFILES']['H_scheduledalns'] = locations['FSYSPATH']['database'] + '.scheduled_alignments.dat'
+	locations['SYSFILES']['PDBTMarchive'] = locations['FSYSPATH']['PDBTM'] + 'PDBTM_archive.dat'
+	locations['SYSFILES']['excludedchains'] = locations['FSYSPATH']['chains'] + 'exclusions.txt'
+	locations['SYSFILES']['chaindata'] = locations['FSYSPATH']['chains'] + 'chain_database.txt'
+	locations['SYSFILES']['missingpdbfiles'] = locations['FSYSPATH']['PDBpdbs'] + 'missing_files.txt'
+	locations['SYSFILES']['missingfastafiles'] = locations['FSYSPATH']['PDBfasta'] + 'missing_files.txt'
+	locations['SYSFILES']['repocstraln'] = locations['FSYSPATH']['repocstraln'] + 'structure_alignments.dat'
+	# OPT
 
 	# Generate filesystem
 	log = ""
-	os.mkdir(locations['FSYS']['mainpath'])
-	log += print_log(this_name, "Main directory created: {0}\n".format(locations['FSYS']['mainpath']))
+	os.mkdir(locations['FSYSPATH']['main'])
+	log += print_log(this_name, "Main directory created: {0}\n".format(locations['FSYSPATH']['main']))
 
 	c = 0
-	for index, duple in enumerate(locations['FSYS'].items()):
-		if index > 2:
-			os.mkdir(locations['FSYS']['mainpath'] + duple[1])
+	for index, duple in enumerate(locations['FSYSPATH'].items()):
+		if index > 0:
+			os.mkdir(duple[1])
 			log += print_log(this_name, "Directory {0} has been created.".format(duple[0]))
 	write_log(this_name, log)
 

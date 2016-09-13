@@ -262,22 +262,37 @@ def mini_parser(pdbtm_file_path, this_name):
 
 
 # Download structures from the PDB website
-def download_structures(database_namelist, raw_pdb_dir):
+def download_structures(database_namelist, locations):
 	for pdbname in database_namelist:
 		url = 'http://www.rcsb.org/pdb/files/'+pdbname+'.pdb.gz'
-		local_filename = raw_pdb_dir + pdbname + '.pdb'
+		local_filename = locations['FSYSPATH']['PDBpdbs'] + pdbname + '.pdb'
 		if not os.path.exists(local_filename):
 			with urllib.request.urlopen(url) as response:
 				with gzip.GzipFile(fileobj=response) as uncompressed, open(local_filename, 'wb') as local_file:
 					shutil.copyfileobj(uncompressed, local_file)
 
-	downloaded_files = [x[:-4] for x in os.listdir(raw_pdb_dir) if x[-4:]=='.pdb']
-	missing_files_filename = raw_pdb_dir + 'missing_files.txt'
-	missing_files_file = open(missing_files_filename, 'a')
+	for pdbname in database_namelist:
+		url = 'http://www.rcsb.org/pdb/files/fasta.txt?structureIdList='+pdbname
+		local_filename = locations['FSYSPATH']['PDBfasta'] + pdbname + '.dat'
+		if not os.path.exists(local_filename):
+			with urllib.request.urlopen(url) as response:
+				local_file = open(local_filename, 'wb')
+				shutil.copyfileobj(response, local_file)
+
+	downloaded_pdb_files = [x[:-4] for x in os.listdir(locations['FSYSPATH']['PDBpdbs']) if x[-4:]=='.pdb']
+	missing_pdb_files_filename = locations['SYSFILES']['missingpdbfiles']
+	missing_pdb_files_file = open(missing_pdb_files_filename, 'a')
 	for database_struct in database_namelist:
-		if database_struct not in downloaded_files:
-			missing_files_file.write(database_struct+"\n")
-	missing_files_file.close()
+		if database_struct not in downloaded_pdb_files:
+			missing_pdb_files_file.write(database_struct+"\n")
+	missing_pdb_files_file.close()
+	downloaded_fasta_files = [x[:-4] for x in os.listdir(locations['FSYSPATH']['PDBfasta']) if x[-4:]=='.dat']
+	missing_fasta_files_filename = locations['SYSFILES']['missingfastafiles']
+	missing_fasta_files_file = open(missing_fasta_files_filename, 'a')
+	for database_struct in database_namelist:
+		if database_struct not in downloaded_fasta_files:
+			missing_fasta_files_file.write(database_struct+"\n")
+	missing_fasta_files_file.close()
 
 
 # --- Library functions ---------------------------------------------------- #
@@ -290,7 +305,7 @@ def generate_raw_pdb_library(options, locations):
 	pdbtm_file_path = options['pdbtm_file_path']
 
 	# Checks
-	for path_name in [locations['FSYS']['mainpath']+x[1] for n, x in enumerate(locations['FSYS'].items()) if n > 2]:
+	for path_name in [x[1] for n, x in enumerate(locations['FSYSPATH'].items()) if n > 0]:
 		if not os.path.exists(path_name):
 			raise_error(this_name, "ERROR: The directory path {0} does not exist. Please generate the file system first.".format(path_name))
 
@@ -301,7 +316,7 @@ def generate_raw_pdb_library(options, locations):
 	
 
 	# Downloader
-	download_structures(database_namelist, locations['FSYS']['mainpath'] + locations['FSYS']['wholepdbs'])
+	download_structures(database_namelist, locations)
 
 	return database
 
@@ -314,7 +329,7 @@ def update_raw_pdb_library(options, locations):
 	log = ""
 
 	# Checks
-	for path_name in [locations['FSYS']['mainpath']+x[1] for n, x in enumerate(locations['FSYS'].items()) if n > 2]:
+	for path_name in [x[1] for n, x in enumerate(locations['FSYSPATH'].items()) if n > 0]:
 		if not os.path.exists(path_name):
 			raise_error(this_name, "ERROR: The directory path {0} does not exist. Please generate the file system first.".format(path_name))
 
@@ -343,6 +358,6 @@ def update_raw_pdb_library(options, locations):
 		return database, []
 	
 	# Downloader
-	download_structures(diff_database_namelist, locations['FSYS']['mainpath'] + locations['FSYS']['wholepdbs'])
+	download_structures(diff_database_namelist, locations)
 
 	return database, diff_database_namelist

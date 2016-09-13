@@ -5,7 +5,13 @@
 # Author: Edoardo Sarti
 # Date: Aug 17 2016
 
-import os, sys, multiprocessing, subprocess, re, time
+import os
+import sys
+import multiprocessing
+import subprocess
+import re
+import time
+import Bio
 
 def repo_inspector(repo_filename):
 	repo_file = open(repo_filename, 'r')
@@ -37,33 +43,32 @@ def repo_inspector(repo_filename):
 
 def FrTMjob(data):
 	locations, target, exelist = data
-	clade, topology, chain_1, straln_path = target
+	topologytype, topology, chain_1, straln_path = target
 	
-	topology_path = locations['FSYS']['mainpath'] + clade + '/' + topology + '/'
-	sequence_path = topology_path + locations['FSYS']['TREE']['seqaln'] + 'seq_' + chain_1 + '.dat'
-	structure_path = topology_path + locations['FSYS']['TREE']['straln'] + 'str_' + chain_1 + '.dat'
-	seq_repo_path = locations['FSYS']['mainpath'] + locations['FSYS']['repochains'] + locations['FSYS']['TREE']['seqaln'] 
-	str_repo_path = locations['FSYS']['mainpath'] + locations['FSYS']['repochains'] + locations['FSYS']['TREE']['straln']
+	topology_path = locations['FSYS'][topologytype] + topology + '/'
+	fasta_path = topology_path + locations['TREE']['straln'] + 'str_' + chain_1 + '_fasta.dat'
+	pdb_path = topology_path + locations['TREE']['straln'] + 'str_' + chain_1 + '_pdb.dat'
+	str_repo_path = locations['FSYS']['repocstraln']
 
 	# Checks for needed locations:
 	# Superfamily path
 	if not os.path.exists(topology_path):
-		raise NameError("ERROR: Superfamily {0} not found in path {1}".format(clade+' '+topology, topology_path)
+		raise NameError("ERROR: Superfamily {0} not found in path {1}".format(topologytype+' '+topology, topology_path)
 	# structure/ folder
-	if not os.path.exists(topology_path + locations['FSYS']['TREE']['str']):
-		raise NameError("ERROR: {0} folder not found in path {1}".format(locations['FSYS']['TREE']['str'], topology_path))
+	if not os.path.exists(topology_path + locations['TREE']['str']):
+		raise NameError("ERROR: {0} folder not found in path {1}".format(locations['TREE']['str'], topology_path))
 	# Main pdb file
-	if not os.path.exists(topology_path + locations['FSYS']['TREE']['str'] + chain_1 + '.pdb'):
-		raise NameError("ERROR: File {0} not found in {1}".format(chain_1 + '.pdb', topology_path + locations['FSYS']['TREE']['str']))
+	if not os.path.exists(topology_path + locations['TREE']['str'] + chain_1 + '.pdb'):
+		raise NameError("ERROR: File {0} not found in {1}".format(chain_1 + '.pdb', topology_path + locations['TREE']['str']))
 	# Secondary pdb files
 	for chain_2 in exelist:
-		if not os.path.exists(topology_path + locations['FSYS']['TREE']['str'] + chain_2 + '.pdb'):
-			raise NameError("ERROR: File {0} not found in {1}".format(chain_2 + '.pdb', topology_path + locations['FSYS']['TREE']['str']))
+		if not os.path.exists(topology_path + locations['TREE']['str'] + chain_2 + '.pdb'):
+			raise NameError("ERROR: File {0} not found in {1}".format(chain_2 + '.pdb', topology_path + locations['TREE']['str']))
 	
 	# Creates, if needed, the alignment locations
-	for n, x in enumerate(locations['FSYS']['TREE'].items()):
-		if n > 0 and not os.path.exists(topology_path + x[1]):
-			os.mkdir(topology_path + x[1])
+	for name, val in locations['TREE'].items():
+		if 'aln' in name and not os.path.exists(topology_path + val):
+			os.mkdir(topology_path + val)
 
 	# Creates, if needed, the repository locations
 	if not os.path.exists(seq_repo_path):
@@ -73,45 +78,45 @@ def FrTMjob(data):
 
 	# Checks if the main sequence file already exists. If it does, checks again if none of the alignments in exelist
 	# is contained in the file. Cancels from exelist any found alignment.
-	if os.path.exists(sequence_path):
-		sequence_file = open(sequence_path, 'r')
-		text = sequence_file.read().split('\n')
+	if os.path.exists(fasta_path):
+		fasta_file = open(fasta_path, 'r')
+		text = fasta_file.read().split('\n')
 		for line in text:
 			if 'CHAIN_2:' in line and field[1] in exelist:
 				logmsg = "Update repository with {0}_{1} sequence alignment".format(exelist[2], field[1])
 				update_repository.append(field[1])
 				exelist.remove[field[1]]
-		sequence_file.close()
+		fasta_file.close()
 
 	# Checks if the main structure file already exists. If it does, checks again if none of the alignments in exelist
 	# is contained in the file. Cancels from exelist any found alignment.
-	if os.path.exists(structure_path):
-		structure_file = open(structure_path, 'r')
-		text = structure_file.read().split('\n')
+	if os.path.exists(pdb_path):
+		pdb_file = open(pdb_path, 'r')
+		text = pdb_file.read().split('\n')
 		for line in text:
 			if 'CHAIN_2:' in line and field[1] in exelist:
 				logmsg = "Update repository with {0}_{1} alignment".format(exelist[2], field[1])
 				update_repository.append(field[1])
 				exelist.remove[field[1]]
-		structure_file.close()
+		pdb_file.close()
 	
 	# Creates the temporary folder for sequence alignments
-	aln_tmpfolder_path = topology_path + 'alignments/fasta/tmp_' + chain_1 + '/'
-	if not os.path.exists(aln_tmpfolder_path):
-		os.mkdir(aln_tmpfolder_path)
+	fasta_tmpfolder_path = topology_path + locations['TREE']['stralns'] + 'tmp_' + chain_1 + '_fasta/'
+	if not os.path.exists(fasta_tmpfolder_path):
+		os.mkdir(fasta_tmpfolder_path)
 
 	# Creates the temporary folder for structure alignments
-	straln_tmpfolder_path = topology_path + 'alignments/str_alns/tmp_' + chain_1 + '/'
-	if not os.path.exists(straln_tmpfolder_path):
-		os.mkdir(straln_tmpfolder_path)
+	pdb_tmpfolder_path = topology_path + locations['TREE']['stralns'] + 'tmp_' + chain_1 + '_pdb/'
+	if not os.path.exists(pdb_tmpfolder_path):
+		os.mkdir(pdb_tmpfolder_path)
 
-	pdb1_filename = topology_path + 'structures/' + chain_1 + '.pdb'
+	pdb1_filename = topology_path + locations['TREE']['structures'] + chain_1 + '.pdb'
 	for chain_2 in exelist:
 		# Defines filenames
-		pdb2_filename = topology_path + 'structures/' + chain_2 + '.pdb'
-		seq_output_filename = aln_tmpfolder_path + 'aln_' + chain_1 + '_' + chain_2 + '.tmp'
+		pdb2_filename = topology_path + locations['TREE']['structures'] + chain_2 + '.pdb'
+		seq_output_filename = fasta_tmpfolder_path + 'aln_' + chain_1 + '_' + chain_2 + '.tmp'
 		str_output_filename = 'straln_' + chain_1 + '_' + chain_2 + '.tmp' # This filename is without path for a constraint on flags length of frtmalign (see below)
-		stdout_filename = aln_tmpfolder_path + 'output_' + chain_1 + '_' + chain_2 + '.tmp'
+		stdout_filename = fasta_tmpfolder_path + 'output_' + chain_1 + '_' + chain_2 + '.tmp'
 
 		# If sequence and structure temporary files are present, jump
 		if os.path.exists(seq_output_filename) and os.path.exists(str_output_filename):
@@ -129,7 +134,7 @@ def FrTMjob(data):
 		stdout_file.close()
 
 		# Moves the Fr-TM-align output file into the structure temporary folder
-		os.rename(topology_path + 'structures/' + str_output_filename, straln_tmpfolder_path + str_output_filename)
+		os.rename(topology_path + locations['TREE']['structures'] + str_output_filename, straln_tmpfolder_path + str_output_filename)
 
 		# Reads and then removes the stdout file from Fr-TM-align
 		stdout_file = open(stdout_filename, 'r')
@@ -157,39 +162,42 @@ def FrTMjob(data):
 		seq_output_file.write(">" + chain_1 + "\n" + seq_1.replace('\x00', '') + "\n>" + chain_2 + "\n" + seq_2.replace('\x00', '') + "\n\nRMSD\t{0:.2f}\nTM-score\t{1:.5f}\n\n".format(RMSD, TMscore))
 		seq_output_file.close()
 
+
+
+
 	# Writes on the main sequence file. Each alignment begins with a "BEGIN" line, followed by two lines reporting the two chain names
 	# (format: "CHAIN_X: chain_name", where X={1,2}), and ends with an "END" line.
-	sequence_file = open(sequence_path, 'a')
+	fasta_file = open(fasta_path, 'a')
 	for tmp_filename in sorted(os.listdir(aln_tmpfolder_path)):
-		sequence_file.write("BEGIN \nCHAIN_1: " + chain_1  + "\nCHAIN_2: " + tmp_filename[-10:-4] + "\n")
+		fasta_file.write("BEGIN \nCHAIN_1: " + chain_1  + "\nCHAIN_2: " + tmp_filename[-10:-4] + "\n")
 		tmp_file = open(aln_tmpfolder_path + tmp_filename)
 		text = tmp_file.read().split('\n')
 		tmp_file.close()
 		for line in text:
-			sequence_file.write(line+'\n')
-		sequence_file.write("END\n\n\n")
+			fasta_file.write(line+'\n')
+		fasta_file.write("END\n\n\n")
 		os.remove(aln_tmpfolder_path + tmp_filename)
 	time.sleep(1)
 	os.rmdir(aln_tmpfolder_path)
-	sequence_file.close()
+	fasta_file.close()
 
 #	repo_inspector()
 
 	# Writes on the main structure file. Each alignment begins with a "BEGIN" line, followed by two lines reporting the two chain names
 	# (format: "CHAIN_X: chain_name", where X={1,2}), and ends with an "END" line.
-	structure_file = open(structure_path, 'a')
+	pdb_file = open(pdb_path, 'a')
 	for tmp_filename in sorted(os.listdir(straln_tmpfolder_path)):
-		structure_file.write("BEGIN \nCHAIN_1: " + chain_1  + "\nCHAIN_2: " + tmp_filename[-10:-4] + "\n")
+		pdb_file.write("BEGIN \nCHAIN_1: " + chain_1  + "\nCHAIN_2: " + tmp_filename[-10:-4] + "\n")
 		tmp_file = open(straln_tmpfolder_path + tmp_filename)
 		text = tmp_file.read().split('\n')
 		tmp_file.close()
 		for line in text:
-			structure_file.write(line+'\n')
-		structure_file.write("END\n\n\n")
+			pdb_file.write(line+'\n')
+		pdb_file.write("END\n\n\n")
 		os.remove(straln_tmpfolder_path + tmp_filename)
 	time.sleep(1)
 	os.rmdir(straln_tmpfolder_path)
-	structure_file.close()
+	pdb_file.close()
 	
 
 def calculate_seqid(alignment):
@@ -211,18 +219,18 @@ def make_new_table(locations, external_filename):
 
 	topologies = []
 	for ss in 'alpha', 'beta':
-		for i in os.listdir(locations['FSYS']['mainpath'] + ss + '/'):
+		for i in os.listdir(locations['FSYSPATH'][ss]):
 			if re.match('^\d*$', str(i)):
 				topologies.append((ss, i))
 
-	table_filename = locations['FSYS']['mainpath'] + external_filename
+	table_filename = locations['FSYSPATH']['main'] + external_filename
 	table_file = open(table_filename, 'w')
 	table = {}
 	for sf in sorted(topologies, key = lambda x: (x[0], int(x[1]))):
 		if not sf[0] in table:
 			table[sf[0]] = {}
 		table[sf[0]][sf[1]] = {}
-		topology_seqaln_path = locations['FSYS']['mainpath'] + sf[0] + '/' + sf[1] + '/alignments/fasta/'
+		topology_seqaln_path = locations['FSYSPATH'][sf[0]] + sf[1] + '/' +  locations['TREE']['straln']
 		if os.path.exists(topology_seqaln_path): 
 			files_in_seqaln_path = os.listdir(topology_seqaln_path)
 		else:
@@ -270,7 +278,7 @@ def structure_alignment(options, locations):
 
 	already_processed = []
 	ex_list = {}
-	hidden_repository_filename = locations['FSYS']['mainpath'] + '.structure_alignments.dat'
+	hidden_repository_filename = locations['SYSFILES']['repocstraln']
 	if os.path.exists(hidden_repository_filename):
 		hidden_repository_file = open(hidden_repository_filename, 'r')
 		text = hidden_repository_file.read().split("\n")
@@ -280,7 +288,7 @@ def structure_alignment(options, locations):
 			fields = line.split()
 			already_processed.append((fields[2], fields[3]))
 		hidden_repository_file.close()
-	repository_filename = locations['FSYS']['mainpath'] + external_filename
+	repository_filename = locations['FSYSPATH']['main'] + external_filename
 	if os.path.exists(repository_filename):
 		repository_file = open(repository_filename, 'r')
 		text = repository_file.read().split("\n")
@@ -295,12 +303,12 @@ def structure_alignment(options, locations):
 	
 	topologies = []
 	for ss in 'alpha', 'beta':
-		for i in os.listdir(locations['FSYS']['mainpath'] + ss + '/'):
+		for i in os.listdir(locations['FSYSPATH'][ss]):
 			if re.match('^\d*$', str(i)):
 				topologies.append((ss, i))
 
 	ex_check = {}
-	exelist_filename = locations['FSYS']['mainpath'] + '.scheduled_alignments.dat'
+	exelist_filename = locations['SYSFILES']['H_scheduledalns']
 	if os.path.exists(exelist_filename):
 		exelist_file = open(exelist_filename, 'r')
 		text = exelist_file.read().split('\n')
@@ -316,7 +324,7 @@ def structure_alignment(options, locations):
 	exelist = {}
 	exelist_file = open(exelist_filename, 'a')
 	for sf in topologies:
-		structs = [x[-10:-4] for x in os.listdir(locations['FSYS']['mainpath'] + sf[0] + '/' + sf[1] + '/structures/') if x[-4:] == '.pdb']
+		structs = [x[-10:-4] for x in os.listdir(locations['FSYSPATH'][sf[0]] + sf[1] + '/' + locations['TREE']['structures']) if x[-4:] == '.pdb']
 #		print(structs)
 		if len(structs) > 1:
 			for s1 in structs:
@@ -350,36 +358,3 @@ def structure_alignment(options, locations):
 	table = make_new_table(locations, external_filename)
 
 	return table
-
-
-def check_runs():
-	instructions_filename = locations['FSYS']['mainpath'] + '.topology_classification.txt'
-	instructions_file = open(instructions_filename, 'r')
-	text = instructions_file.read().split('\n')
-	instructions_file.close()
-
-
-"""
-import genfsys, genrlib, genclib, clusterize
-main_dir = '/u/esarti/LoBoS_Workspace_ES/projects/HOMEP/HOMEP3.1/scripts/generate_library_PDBTM/test/HOMEP_3.1_2016_09_01/'
-straln_path = '/v/apps/csb/frtmalign/frtmalign.exe'
-pdbtm_file_path = 'pdbtmall_reduced'
-output_tab = 'structure_alignments.dat' 
-HOMEP_filename = 'HOMEP_prova.dat'
-seqid_thr = 0.85
-tmscore_thr = 0.6
-np = 8
-filters = {'resolution' : 3.5,
-           'NMR' : False,
-           'THM' : False,
-           'hole_thr' : 100}
-
-
-locations = genfsys.filesystem_info(str(main_dir))
-pdbtm_data = genrlib.generate_raw_pdb_library(locations, pdbtm_file_path)
-pdbtm_data = genclib.generate_chain_pdb_files(locations, pdbtm_data, filters)
-print("init straln")
-table = structure_alignment(locations, straln_path, np, str(output_tab))
-o = clusterize.clusterize(locations, pdbtm_data, table, '', HOMEP_filename, seqid_thr, tmscore_thr)
-#print(table)
-"""
