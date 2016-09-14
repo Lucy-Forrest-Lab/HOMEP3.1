@@ -264,6 +264,7 @@ def generate_filesystem():
 	locations['SYSFILES']['missingpdbfiles'] = locations['FSYSPATH']['PDBpdbs'] + 'missing_files.txt'
 	locations['SYSFILES']['missingfastafiles'] = locations['FSYSPATH']['PDBfasta'] + 'missing_files.txt'
 	locations['SYSFILES']['repocstraln'] = locations['FSYSPATH']['repocstraln'] + 'structure_alignments.dat'
+	locations['SYSFILES']['repocseqaln'] = locations['FSYSPATH']['repocseqaln'] + 'sequence_alignments.dat'
 	# OPT
 
 	# Generate filesystem

@@ -1,6 +1,6 @@
 # Name: generate_library.py
 # Language: python3
-# Libraries: genfsys, genrlib, genclib, straln, clusterize
+# Libraries: genfsys, genrlib, genclib, straln, cluster
 # Description: Generates HOMEP library from scratch
 # Author: Edoardo Sarti
 # Date: Sep 4 2016
@@ -9,7 +9,7 @@ import genfsys
 import genrlib
 import genclib
 import straln
-import clusterize
+import cluster
 
 
 print("GENERATE FILESYSTEM")
@@ -114,4 +114,4 @@ print("CLUSTERIZE RESULTS")
 #  <HOMEP3.1.dat> - the name of this file can be changed with the flag
 #                   --output_homep. Contains the full classification of all
 #                   structures contained in the database.
-homep_library = clusterize.clusterize(options, locations, core_pdbtm_data, table)
+homep_library = cluster.cluster(options, locations, core_pdbtm_data, table)
