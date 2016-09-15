@@ -21,16 +21,13 @@ def repo_inspector(repo_filename):
 	for line in text:
 		fields = line.split()
 		if line and fields[0] == 'BEGIN':
+			chain_1 = fields[2]
+			chain_2 = fields[4]
 			record = True
-			recorded_text = ""
 		if not record and not line:
 			continue
 		if record:
 			recorded_text = line + '\n'
-		if fields[0] == 'CHAIN_1:':
-			chain_1 = fields[1]
-		if fields[0] == 'CHAIN_2:':
-			chain_2 = fields[1]
 		if fields[0] == 'END':
 			if chain_1 not in repo_info:
 				repo_info[chain_1] = {}
@@ -39,6 +36,17 @@ def repo_inspector(repo_filename):
 			repo_info[chain_1][chain_2] = recorded_text
 			record = False
 	return repo_info
+
+
+def write_on_repo(repo_filename, textdict, append=False):
+	if append:
+		repo_file = open(repo_filename, 'a')
+	else:
+		repo_file = open(repo_filename, 'w')
+	for val1 in textdict:
+		for val2 in textdict[val1]:
+			repo_file.write("BEGIN\t\tCHAIN_1: " + chain_1  + "\tCHAIN_2: " + chain_2 + "\n" + textdict + "\nEND\n\n\n")
+	repo_file.close()
 
 
 def FrTMjob(data):
@@ -54,7 +62,7 @@ def FrTMjob(data):
 	# Checks for needed locations:
 	# Superfamily path
 	if not os.path.exists(topology_path):
-		raise NameError("ERROR: Superfamily {0} not found in path {1}".format(topologytype+' '+topology, topology_path)
+		raise NameError("ERROR: Superfamily {0} not found in path {1}".format(topologytype+' '+topology, topology_path))
 	# structure/ folder
 	if not os.path.exists(topology_path + locations['TREE']['str']):
 		raise NameError("ERROR: {0} folder not found in path {1}".format(locations['TREE']['str'], topology_path))
@@ -169,7 +177,7 @@ def FrTMjob(data):
 		
 		# Creates a sequence temporary file already correctly formatted
 		fasta_output_file = open(fasta_output_filename, 'w')
-		fasta_output_file.write(">" + chain_1 + "\n" + seq_1.replace('\x00', '') + "\n>" + chain_2 + "\n" + seq_2.replace('\x00', '') + "\n\nRMSD\t{0:.2f}\nTM-score\t{1:.5f}\n\n".format(RMSD, TMscore))
+		fasta_output_file.write(">" + chain_1 + "\n" + seq_1.replace('\x00', '') + "\n>" + chain_2 + "\n" + seq_2.replace('\x00', '') + "\n\nRMSD\t{0:.2f}\nTM-score\t{1:.5f}\nstr_SEQID\t{2:.5f}\n\n".format(RMSD, TMscore, calculate_seqid((seq_1, seq_2))))
 		fasta_output_file.close()
 
 	fasta1_filename = topology_path + locations['TREE']['seq'] + chain_1 + '.fa'
@@ -182,46 +190,48 @@ def FrTMjob(data):
 	fasta1_file.close()
 	seqfasta_file = open(seqfasta_filename, 'w')
 	for chain_2 in exelist:
+		seqfasta_file.write("BEGIN\t\tCHAIN_1: " + chain_1  + "\tCHAIN_2: " + chain_2 + "\n")
 		if not (repo_info_seq_fasta[chain_1] and repo_info_seq_fasta[chain_1][chain_2]):
 			fasta2_filename = topology_path + locations['TREE']['seq'] + chain_2 + '.fa'
 			fasta2_file = open(fasta2_filename, 'r')
 			text = fasta2_file.read().split('\n')
+			fasta2_file.close()
 			for line in text:
 				if line and line[0] != '>':
 					sequence_2 = line.strip()
 					break
-			fasta2_file.close()
 			result = Bio.pairwise2.align.globalds(sequence_1, sequence_2, Bio.SubsMat.MatrixInfo.blosum62, -10.0, -0.5)
 			seqaln = [result[0][0][0], result[0][1][0]]
-			seqfasta_file.write("BEGIN \nCHAIN_1: " + chain_1  + "\nCHAIN_2: " + chain_2 + "\n")
-			seqfasta_file.write("{0}\n{1}\n{2}\n{3}\n\nSEQID: {4}\n\nEND\n\n\n".format(chain_1, seqaln[0], chain_2, seqaln[1], calculate_seqid(seqaln)))
+			text = "{0}\n{1}\n{2}\n{3}\n\nseq_SEQID: {4}\n".format(chain_1, seqaln[0], chain_2, seqaln[1], calculate_seqid(seqaln))
+			seqfasta_file.write(text)
+			repo_info_seq_fasta[chain_1][chain_2] = text
 		else:
-			seqfasta_file.write("BEGIN \n")
 			for line in repo_info_seq_fasta[chain_1][chain_2]:
 				seqfasta_file.write(line+"\n")
-			seqfasta_file.write("END\n\n\n")
+		seqfasta_file.write("END\n\n\n")
+	write_on_repo(locations['FSYSPATH']['repocseqaln'] + 'seq_' + chain_1 + '_fasta.dat', repo_info_seq_fasta)
 
 	# Writes on the main sequence file. Each alignment begins with a "BEGIN" line, followed by two lines reporting the two chain names
 	# (format: "CHAIN_X: chain_name", where X={1,2}), and ends with an "END" line.
 	strfasta_file = open(strfasta_filename, 'w')
 	for chain_2 in exelist:
+		strfasta_file.write("BEGIN\t\tCHAIN_1: " + chain_1  + "\tCHAIN_2: " + chain_2 + "\n")
 		if not (repo_info_str_fasta[chain_1] and repo_info_str_fasta[chain_1][chain_2]):
 			tmp_filename = fasta_tmpfolder_path + 'straln_' + chain_1 + '_' + chain_2 + '_fasta.tmp'
 			if not os.path.exists(tmp_filename):
 				continue
-			strfasta_file.write("BEGIN \nCHAIN_1: " + chain_1  + "\nCHAIN_2: " + chain_2 + "\n")
 			tmp_file = open(tmp_filename)
 			text = tmp_file.read().split('\n')
 			tmp_file.close()
 			for line in text:
 				strfasta_file.write(line+'\n')
-			strfasta_file.write("END\n\n\n")
+			repo_info_str_fasta[chain_1][chain_2] = text
 			os.remove(tmp_filename)
 		else:
-			strfasta_file.write("BEGIN \n")
 			for line in repo_info_str_fasta[chain_1][chain_2]:
 				strfasta_file.write(line + '\n')
-			strfasta_file.write("END\n\n\n")
+		strfasta_file.write("END\n\n\n")
+	write_on_repo(locations['FSYSPATH']['repocstraln'] + 'str_' + chain_1 + '_fasta.dat', repo_info_str_fasta)
 	time.sleep(1)
 	os.rmdir(strfasta_tmpfolder_path)
 	strfasta_file.close()
@@ -230,26 +240,28 @@ def FrTMjob(data):
 	# (format: "CHAIN_X: chain_name", where X={1,2}), and ends with an "END" line.
 	strpdb_file = open(strpdb_filename, 'w')
 	for chain_2 in exelist:
+		strpdb_file.write("BEGIN\t\tCHAIN_1: " + chain_1  + "\tCHAIN_2: " + chain_2 + "\n")
 		if not (repo_info_str_pdb[chain_1] and repo_info_str_pdb[chain_1][chain_2]):
 			tmp_filename = pdb_tmpfolder_path + 'straln_' + chain_1 + '_' + chain_2 + '_pdb.tmp'
 			if not os.path.exists(tmp_filename):
 				continue
-			strpdb_file.write("BEGIN \nCHAIN_1: " + chain_1  + "\nCHAIN_2: " + chain_2 + "\n")
 			tmp_file = open(tmp_filename)
 			text = tmp_file.read().split('\n')
 			tmp_file.close()
 			for line in text:
 				strpdb_file.write(line+'\n')
-			strpdb_file.write("END\n\n\n")
+			repo_info_str_pdb[chain_1][chain_2] = text
 			os.remove(tmp_filename)
 		else:
-			strpdb_file.write("BEGIN \n")
 			for line in repo_info_str_pdb[chain_1][chain_2]:
 				strpdb_file.write(line + '\n')
-			strpdb_file.write("END\n\n\n")
+		strpdb_file.write("END\n\n\n")
+	write_on_repo(locations['FSYSPATH']['repocstraln'] + 'str_' + chain_1 + '_pdb.dat', repo_info_str_pdb[chain_1][chain_2])
 	time.sleep(1)
 	os.rmdir(pdb_tmpfolder_path)
 	strpdb_file.close()
+
+	return (repo_info_seq_fasta, repo_info_str_fasta, repo_info_str_pdb)
 	
 
 def calculate_seqid(alignment):
@@ -266,8 +278,31 @@ def calculate_seqid(alignment):
 		return 0
 
 
-def make_new_table(locations, external_filename):
+def make_new_table(locations, fasta_repos, external_filename):
+	seq_fasta_repo, str_fasta_repo = fasta_repos
 	names = {'alpha' : 'a', 'beta' : 'b'}
+
+	instructions_filename = locations['SYSFILES']['H_topologytype']
+	instructions_file = open(instructions_filename, 'r')
+	text = instructions_file.read().split('\n')
+	instructions_file.close()
+
+	instructions = {}
+	for line in text:
+		if not line:
+			continue
+		fields = line.split()
+		if fields[0] not in instructions:
+			instructions[fields[0]] = {}
+		instructions[fields[0]][fields[1]] = fields[2]
+
+	table_filename = locations['FSYSPATH']['main'] + external_filename
+	table_file = open(table_filename, 'w')
+	table = {}
+	for toptype in list(instructions.keys()):
+		for top in instructions[toptype]:
+			# REWRITE IT HERE WITH THE TWO REPO DICTIONARIES
+
 
 	topologies = []
 	for ss in 'alpha', 'beta':
@@ -282,12 +317,12 @@ def make_new_table(locations, external_filename):
 		if not sf[0] in table:
 			table[sf[0]] = {}
 		table[sf[0]][sf[1]] = {}
-		topology_seqaln_path = locations['FSYSPATH'][sf[0]] + sf[1] + '/' +  locations['TREE']['straln']
-		if os.path.exists(topology_seqaln_path): 
-			files_in_seqaln_path = os.listdir(topology_seqaln_path)
+		topology_strfasta_path = locations['FSYSPATH'][sf[0]] + sf[1] + '/' +  locations['TREE']['straln']
+		if os.path.exists(topology_strfasta_path): 
+			files_in_strfasta_path = os.listdir(topology_strfasta_path)
 		else:
-			files_in_seqaln_path = []
-		for seqaln_filename in files_in_seqaln_path:
+			files_in_strfasta_path = []
+		for strfasta_filename in files_in_strfasta_path:
 			if seqaln_filename[0:4] == 'seq_' and seqaln_filename[-4:] == '.dat':
 				seqaln_file = open(topology_seqaln_path + seqaln_filename, 'r')
 				text = seqaln_file.read().split('\n')
@@ -298,11 +333,9 @@ def make_new_table(locations, external_filename):
 					fields = text[nline].split()
 #					print(seqaln_filename, fields)
 					if fields[0] == 'BEGIN':
+						chain_1 = fields[2]
+						chain_2 = fields[4]
 						continue
-					elif fields[0] == 'CHAIN_1:':
-						chain_1 = fields[1]
-					elif fields[0] == 'CHAIN_2:':
-						chain_2 = fields[1]
 					elif fields[0] == '>' + chain_1:
 						seq_1 = text[nline+1]
 					elif fields[0] == '>' + chain_2:
@@ -407,6 +440,17 @@ def structure_alignment(options, locations):
 	pool.close()
 	pool.join()
 
-	table = make_new_table(locations, external_filename)
+	repo_info_seq_fasta, repo_info_str_fasta, repo_info_str_pdb = pool_outputs[0]
+	tot_repo_info_seq_fasta = repo_info_seq_fasta.copy()
+	tot_repo_info_str_fasta = repo_info_str_fasta.copy()
+	tot_repo_info_str_pdb = repo_info_str_pdb.copy()
+	for triplet in pool_outputs[1:]:
+		repo_info_seq_fasta, repo_info_str_fasta, repo_info_str_pdb = triplet
+		tot_repo_info_seq_fasta.update(repo_info_seq_fasta)
+		tot_repo_info_str_fasta.update(repo_info_str_fasta)
+		tot_repo_info_str_pdb.update(repo_info_str_pdb)
+	fasta_repos = (tot_repo_info_seq_fasta, tot_repo_info_str_fasta)
+
+	table = make_new_table(locations, fasta_repos, external_filename)
 
 	return table

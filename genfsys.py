@@ -195,7 +195,7 @@ def generate_filesystem():
 	other_versions_allowed = True
 
 	# Run command line parser
-	options, filters = main_parser(this_name)
+	options, filters = main_parser()
 	install_path = options['install_dir'] + '/'
 	main_dir = 'HOMEP_' + str(version) + '_' + datetime.datetime.now().strftime("%Y_%m_%d") + '/'
 	main_path = install_path + main_dir
