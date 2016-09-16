@@ -48,15 +48,15 @@ def cluster(options, locations, database, table):
 				table[fields[0]][fields[1]] = {}
 			if not fields[2] in table[fields[0]][fields[1]]:
 				table[fields[0]][fields[1]][fields[2]] = {}
-			table[fields[0]][fields[1]][fields[2]][fields[3]] = (float(fields[4]), float(fields[5]), float(fields[6]), fields[7])
+			table[fields[0]][fields[1]][fields[2]][fields[3]] = (float(fields[4]), float(fields[5]), float(fields[6]), float(fields[7]))
 
 
 	HOMEP_file = open(locations['FSYSPATH']['main'] + HOMEP_filename, 'w')
 	HOMEP_library = {}
-	for ss in sorted(list(table.keys())):
-		for sf in sorted(list(table[ss].keys()), key = lambda x: int(x)):
-			topology_name = ss + str(int(sf))	
-	
+	for toptype in sorted(list(table.keys())):
+		for top in sorted(list(table[toptype].keys()), key = lambda x: int(x)):
+			topology_name = toptype + str(int(top))	
+
 			sub_listofsets = []
 			fold_listofsets = []
 			for s1 in table[ss][sf]:
@@ -64,69 +64,82 @@ def cluster(options, locations, database, table):
 					# Warning: there are cases in which seqid > seqid_thr but tmscore < tmscore_thr.
 					# Usually they happen when one chain is a subsequence of the other one (in which case seqid ~ 1).
 					# Nonetheless, we do not want to consider these cases as into the same subunit a priori.
-					if table[ss][sf][s1][s2][1] > tmscore_thr:
+					if table[ss][sf][s1][s2][2] > tmscore_thr:
 						fold_listofsets.append(frozenset([s1, s2]))
-						if table[ss][sf][s1][s2][0] > seqid_thr:
-							sub_listofsets.append(frozenset([s1, s2]))
+					if table[ss][sf][s1][s2][0] > seqid_thr:
+						sub_listofsets.append(frozenset([s1, s2]))			
 
+			# Creates closed component stes
 			sub_sets = merge(sub_listofsets)
 			fold_sets = merge(fold_listofsets)
 
 			fold_sub_sets = []
 			for nfold in range(len(fold_sets)):
 				fold_sub_sets.append(set([]))
+				# Search through all fold clusters
 				for struct in fold_sets[nfold]:
+					# The structure is not a priori in any seq cluster
 					in_sub = False
+					# Search through all sequence clusters
 					for nsub in range(len(sub_sets)):
+						# If a structure is in that seq cluster,
+						# add that entire seq cluster to the last fold set
 						if struct in sub_sets[nsub]:
 							fold_sub_sets[-1].add(sub_sets[nsub])
 							in_sub = True
 							break
+					# If struct was not in any seq cluster, add only that struct
+					# to the last fold set
 					if not in_sub:
 						fold_sub_sets[-1].add(frozenset([struct]))
-	
+
+			# Create list of folds and list of subunits, each fold and subunit reports the number of elements it contains
 			fl = []
-			ol = []
-			cf = 0
+			sl = []
+			cf = 0  # Index to relate a fold to the subunits it contains
 			for fold in fold_sub_sets:
 				fl.append((fold, len(fold), cf))
 				for sub in fold:
-					ol.append((sub, len(sub), cf))
+					sl.append((sub, len(sub), cf))
 				cf += 1
-	
+
+			# Write the HOMEP file
 			cf = 0
-			co = 0
-			tmlist = []
+			cs = 0
+			tmlist = []  # List to keep track of all classified stuctures
 			HOMEP_file.write("Topology #{0}\n".format(topology_name))
 			for fold in sorted(fl, key=lambda x : -x[1]):
 				HOMEP_file.write("\tFold #{0}\n".format(cf))
-				for sub in sorted(ol, key=lambda y : -y[1]):
+				for sub in sorted(sl, key=lambda y : -y[1]):
+					# If that subunit does not belong to that fold, jump
 					if fold[2] != sub[2]:
 						continue
-					HOMEP_file.write("\t\tSubunit #{0}\n".format(co))
+					HOMEP_file.write("\t\tSubunit #{0}\n".format(cs))
 					for struct in sub[0]:
 						title = ''
 						if 'TITLE' in database[struct[:4]][1]['FROM_PDB']:
 							title = database[struct[:4]][1]['FROM_PDB']['TITLE']
 						HOMEP_file.write("\t\t\t{0}\t{1}\n".format(struct, title))
 						tmlist.append(struct)
-					co += 1
+					cs += 1
 				cf += 1
 
 			print(tmlist)
 
+			# If there are other unclassified structures (not related to any other structure by any common fold or subunit),
+			# for each of them a separate fold is created (super-singleton)
 			for s in list(database.keys()):
 				for c in list(database[s][1]['CHAIN'].keys()):
 					struct = s+'_'+c
 					if int(database[s][1]['CHAIN'][c][0]['NUM_TM']) == int(sf) and database[s][1]['CHAIN'][c][0]['TYPE'] == ss and struct not in tmlist:
 						print(struct)
 						HOMEP_file.write("\tFold #{0}\n".format(cf))
-						HOMEP_file.write("\t\tSubunit #{0}\n".format(co))
+						HOMEP_file.write("\t\tSubunit #{0}\n".format(cs))
 						title = ''
 						if 'TITLE' in database[s][1]['FROM_PDB']:
 							title = database[struct[:4]][1]['FROM_PDB']['TITLE']
 						HOMEP_file.write("\t\t\t{0}\t{1}\n".format(struct, title))
-						co += 1
+						cs += 1
 						cf += 1
 
 			HOMEP_library[topology_name] = fold_sub_sets

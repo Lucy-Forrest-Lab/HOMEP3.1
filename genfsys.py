@@ -104,7 +104,7 @@ def main_parser():
 def write_hidden_files(options, filters, locations):
 	# Write the .options.dat hidden file in the main directory of the file system.
 	# It contains all command line options with whom the script is running.
-	options_filename = locations['FSYS']['mainpath'] + '.options.dat'
+	options_filename = locations['FSYSPATH']['main'] + '.options.dat'
 	options_file = open(options_filename, 'w')
 	for x in list(options.keys()):
 		options_file.write("{0}\t\t{1}\n".format(x, options[x]))
@@ -112,7 +112,7 @@ def write_hidden_files(options, filters, locations):
 
 	# Write the .filters.dat hidden file in the main directory of the file system.
 	# It contains all filters with whom the script is running.
-	filters_filename = locations['FSYS']['mainpath'] + '.filters.dat'
+	filters_filename = locations['FSYSPATH']['main'] + '.filters.dat'
 	filters_file = open(filters_filename, 'w')
 	for x in list(filters.keys()):
 		filters_file.write("{0}\t\t{1}\n".format(x, filters[x]))
@@ -120,9 +120,9 @@ def write_hidden_files(options, filters, locations):
 
 	# Write the .locations.dat hidden file in the main directory of the file system.
 	# It contains the same information contained in the 'locations' dictionary.
-	locations_filename = locations['FSYS']['mainpath'] + '.locations.dat'
+	locations_filename = locations['FSYSPATH']['main'] + '.locations.dat'
 	locations_file = open(locations_filename, 'w')
-	for key, value in list(locations['FSYS'].items()):
+	for key, value in list(locations['FSYSPATH'].items()):
 		locations_file.write("{0}\t\t{1}\t\t{2}\n".format('FSYS', key, value))
 	locations_file.close()
 
@@ -221,8 +221,8 @@ def generate_filesystem():
 	locations['TREE']['str'] = 'structures/'
 	locations['TREE']['seq'] = 'sequences/'
 	locations['TREE']['aln'] = 'alignments/'
-	locations['TREE']['seqaln'] = locations['FSYS']['TREE']['aln'] + 'seq_alns/'
-	locations['TREE']['straln'] = locations['FSYS']['TREE']['aln'] + 'str_alns/'
+	locations['TREE']['seqaln'] = locations['TREE']['aln'] + 'seq_alns/'
+	locations['TREE']['straln'] = locations['TREE']['aln'] + 'str_alns/'
 	# FSYS
 	locations['FSYS']['main'] = 'HOMEP_' + str(version) + '_' + datetime.datetime.now().strftime("%Y_%m_%d") + '/'
 	locations['FSYS']['database'] = 'database/'                                                         # database/
@@ -239,8 +239,9 @@ def generate_filesystem():
 	locations['FSYS']['repository'] = 'repository/'                                                     # repository/
 	locations['FSYS']['repowhole'] = locations['FSYS']['repository'] + 'whole_structs/'                 # repository/whole_structs/
 	locations['FSYS']['repochains'] = locations['FSYS']['repository'] + 'chains/'                       # repository/chains/
-	locations['FSYS']['repocseqaln'] = locations['FSYS']['repochains'] + locations['TREE']['seqaln']    # repository/chains/seq_alns
-	locations['FSYS']['repocstraln'] = locations['FSYS']['repochains'] + locations['TREE']['straln']    # repository/chains/str_alns
+	locations['FSYS']['repocaln'] = locations['FSYS']['repochains'] + locations['TREE']['aln']          # repository/chains/alignments/
+	locations['FSYS']['repocseqaln'] = locations['FSYS']['repochains'] + locations['TREE']['seqaln']    # repository/chains/alignments/seq_alns/
+	locations['FSYS']['repocstraln'] = locations['FSYS']['repochains'] + locations['TREE']['straln']    # repository/chains/alignments/str_alns/
 	locations['FSYS']['PDB'] = 'PDB/'                                                                   # PDB/
 	locations['FSYS']['PDBpdbs'] = locations['FSYS']['PDB'] + 'pdbs/'                                   # PDB/pdbs/
 	locations['FSYS']['PDBfasta'] = locations['FSYS']['PDB'] + 'fasta/'                                 # PDB/fasta/
@@ -274,7 +275,7 @@ def generate_filesystem():
 
 	c = 0
 	for index, duple in enumerate(locations['FSYSPATH'].items()):
-		if index > 0:
+		if index > 1:
 			os.mkdir(duple[1])
 			log += print_log(this_name, "Directory {0} has been created.".format(duple[0]))
 	write_log(this_name, log)

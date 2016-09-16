@@ -299,59 +299,35 @@ def make_new_table(locations, fasta_repos, external_filename):
 	table_filename = locations['FSYSPATH']['main'] + external_filename
 	table_file = open(table_filename, 'w')
 	table = {}
-	for toptype in list(instructions.keys()):
-		for top in instructions[toptype]:
-			# REWRITE IT HERE WITH THE TWO REPO DICTIONARIES
-
-
-	topologies = []
-	for ss in 'alpha', 'beta':
-		for i in os.listdir(locations['FSYSPATH'][ss]):
-			if re.match('^\d*$', str(i)):
-				topologies.append((ss, i))
-
-	table_filename = locations['FSYSPATH']['main'] + external_filename
-	table_file = open(table_filename, 'w')
-	table = {}
-	for sf in sorted(topologies, key = lambda x: (x[0], int(x[1]))):
-		if not sf[0] in table:
-			table[sf[0]] = {}
-		table[sf[0]][sf[1]] = {}
-		topology_strfasta_path = locations['FSYSPATH'][sf[0]] + sf[1] + '/' +  locations['TREE']['straln']
-		if os.path.exists(topology_strfasta_path): 
-			files_in_strfasta_path = os.listdir(topology_strfasta_path)
-		else:
-			files_in_strfasta_path = []
-		for strfasta_filename in files_in_strfasta_path:
-			if seqaln_filename[0:4] == 'seq_' and seqaln_filename[-4:] == '.dat':
-				seqaln_file = open(topology_seqaln_path + seqaln_filename, 'r')
-				text = seqaln_file.read().split('\n')
-				seqaln_file.close()
-				for nline in range(len(text)):
-					if not text[nline]:
+	for toptype in sorted(list(instructions.keys())):
+		table[toptype] = {}
+		for top in sorted(list(instructions[toptype].keys())):
+			table[toptype][top] = {}
+			for chain_1 in sorted(instructions[toptype][top]):
+				table[toptype][top][chain_1] = {}
+				for chain_2 in sorted(instructions[toptype][top]):
+					if chain_1 == chain_2:
 						continue
-					fields = text[nline].split()
-#					print(seqaln_filename, fields)
-					if fields[0] == 'BEGIN':
-						chain_1 = fields[2]
-						chain_2 = fields[4]
-						continue
-					elif fields[0] == '>' + chain_1:
-						seq_1 = text[nline+1]
-					elif fields[0] == '>' + chain_2:
-						seq_2 = text[nline+1]
-					elif fields[0] == 'RMSD':
-						RMSD = float(fields[1])
-					elif fields[0] == 'TM-score':
-						tmscore = float(fields[1])
-					elif fields[0] == 'END':
-						if not (chain_1 and chain_2 and seq_1 and seq_2):
-							raise NameError("ERROR: file is corrupted")
-						seqid = calculate_seqid((seq_1, seq_2))
-						table_file.write("{0}\t{1}\t{2}\t{3}\t{4:10.8f}\t{5:10.8f}\t{6:10.6f}\t\t{7}\n".format(names[sf[0]], str(int(sf[1])).zfill(3), chain_1, chain_2, seqid, tmscore, RMSD, topology_seqaln_path+seqaln_filename))
-						if chain_1 not in table[sf[0]][sf[1]]:
-							table[sf[0]][sf[1]][chain_1] = {}
-						table[sf[0]][sf[1]][chain_1][chain_2] = (seqid, tmscore, RMSD, topology_seqaln_path+seqaln_filename)
+					text = seq_fasta_repo[chain_1][chain_2].split('\n')
+					for line in text:
+						if not line:
+							continue
+						fields = line.split()
+						if fields[0] == 'seq_SEQID':
+							seq_seqid = float(fields[1])
+					text = str_fasta_repo[chain_1][chain_2].split('\n')
+					for line in text:
+						if not line:
+							continue
+						fields = line.split()
+						if fields[0] == 'str_SEQID':
+							str_seqid = float(fields[1])
+						elif fields[0] == 'TM-score':
+							TMscore = float(fields[1])
+						elif fields[0] == 'RMSD':
+							RMSD = float(fields[1])
+					table_file.write("{0}\t{1}\t{2}\t{3}\t{4:10.8f}\t{5:10.8f}\t{6:10.8f}\t{7:10.6f}\n".format(names[sf[0]], str(int(sf[1])).zfill(3), chain_1, chain_2, seq_seqid, str_seqid, TMscore, RMSD))
+					table[toptype][top][chain_1][chain_2] = (seq_seqid, str_seqid, TMscore, RMSD)
 	table_file.close()
 	return table
 							

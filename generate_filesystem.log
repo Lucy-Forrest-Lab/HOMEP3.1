@@ -1,0 +1,23 @@
+[generate_filesystem 2016-09-16 17:58:55] Main directory created: test//HOMEP_3.1_2016_09_16/
+                                          
+[generate_filesystem 2016-09-16 17:58:55] Directory database has been created.
+[generate_filesystem 2016-09-16 17:58:55] Directory layers has been created.
+[generate_filesystem 2016-09-16 17:58:55] Directory tree has been created.
+[generate_filesystem 2016-09-16 17:58:55] Directory alpha has been created.
+[generate_filesystem 2016-09-16 17:58:55] Directory beta has been created.
+[generate_filesystem 2016-09-16 17:58:55] Directory symmetries has been created.
+[generate_filesystem 2016-09-16 17:58:55] Directory sequences has been created.
+[generate_filesystem 2016-09-16 17:58:55] Directory selection has been created.
+[generate_filesystem 2016-09-16 17:58:55] Directory whole has been created.
+[generate_filesystem 2016-09-16 17:58:55] Directory chains has been created.
+[generate_filesystem 2016-09-16 17:58:55] Directory old has been created.
+[generate_filesystem 2016-09-16 17:58:55] Directory repository has been created.
+[generate_filesystem 2016-09-16 17:58:55] Directory repowhole has been created.
+[generate_filesystem 2016-09-16 17:58:55] Directory repochains has been created.
+[generate_filesystem 2016-09-16 17:58:55] Directory repocaln has been created.
+[generate_filesystem 2016-09-16 17:58:55] Directory repocseqaln has been created.
+[generate_filesystem 2016-09-16 17:58:55] Directory repocstraln has been created.
+[generate_filesystem 2016-09-16 17:58:55] Directory PDB has been created.
+[generate_filesystem 2016-09-16 17:58:55] Directory PDBpdbs has been created.
+[generate_filesystem 2016-09-16 17:58:55] Directory PDBfasta has been created.
+[generate_filesystem 2016-09-16 17:58:55] Directory PDBTM has been created.
